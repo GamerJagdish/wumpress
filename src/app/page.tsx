@@ -11,6 +11,7 @@ import AdvancedSettings from '@/components/AdvancedSettings';
 import ProgressCard from '@/components/ProgressCard';
 import ResultCard from '@/components/ResultCard';
 import ClickSpark from '@/components/ClickSpark';
+import CountUp from '@/components/CountUp';
 
 import { inspectFile } from '@/lib/media-inspector';
 import { calculateVideoBitrates, formatBytes, formatDuration } from '@/lib/calculator';
@@ -345,7 +346,7 @@ export default function HomePage() {
                 transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                 className="w-full py-4 px-6 rounded-2xl bg-[#5865f2] hover:bg-[#4752c4] active:bg-[#3c45a5] text-white font-bold text-base sm:text-lg tracking-wide transition-colors duration-150 font-['Outfit'] select-none"
               >
-                Wumpress to {config.targetSizeMB} MB
+                Wumpress to <CountUp to={config.targetSizeMB} duration={0.3} /> MB
               </motion.button>
             </motion.div>
           )}
@@ -360,7 +361,7 @@ export default function HomePage() {
             className="hover:text-white transition-colors duration-150 inline-block"
           >
             Wumpress v1.0 using{' '}
-            <span className="text-[#dbdee1] underline underline-offset-2">
+            <span className="underline underline-offset-2">
               {coreType}
             </span>
           </a>
