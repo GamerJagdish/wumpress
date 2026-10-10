@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Loader2, Terminal, Clock, ChevronDown } from 'lucide-react';
+import Icon from './Icon';
 import { CompressionProgress } from '../lib/types';
 import { formatDuration } from '../lib/calculator';
 
@@ -46,7 +46,7 @@ export default function ProgressCard({ progress, logs }: ProgressCardProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-[#313338] border border-[#3f4147] flex items-center justify-center text-[#5865f2]">
-            <Loader2 className="w-5 h-5 animate-spin" />
+            <Icon name="progress_activity" size={20} className="animate-spin" />
           </div>
           <div>
             <h3 className="text-xl sm:text-2xl font-bold text-white font-['Outfit']">
@@ -60,7 +60,7 @@ export default function ProgressCard({ progress, logs }: ProgressCardProps) {
 
         <div className="flex items-center gap-3 self-end sm:self-auto text-xs">
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1e1f22] border border-[#383a40] text-[#949ba4]">
-            <Clock className="w-3.5 h-3.5 text-[#5865f2]" />
+            <Icon name="schedule" size={14} className="text-[#5865f2]" />
             <span>{formatDuration(progress.timeElapsed)}</span>
           </div>
           <div className="text-2xl sm:text-3xl font-black text-[#5865f2]">
@@ -112,10 +112,12 @@ export default function ProgressCard({ progress, logs }: ProgressCardProps) {
           onClick={handleToggleLogs}
           className="flex items-center gap-2 text-xs text-[#949ba4] hover:text-white transition-colors"
         >
-          <Terminal className="w-3.5 h-3.5 text-[#5865f2]" />
+          <Icon name="terminal" size={15} className="text-[#5865f2]" />
           <span>Raw Logs ({logs.length})</span>
-          <ChevronDown
-            className={`w-3.5 h-3.5 transition-transform ${showLogs ? 'rotate-180' : ''}`}
+          <Icon
+            name="expand_more"
+            size={16}
+            className={`transition-transform duration-200 ${showLogs ? 'rotate-180' : ''}`}
           />
         </button>
 

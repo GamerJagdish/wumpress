@@ -2,12 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import {
-  FileVideo,
-  FileImage,
-  RotateCcw,
-  AlertTriangle,
-} from 'lucide-react';
+import Icon from '@/components/Icon';
 
 import Header from '@/components/Header';
 import Dropzone from '@/components/Dropzone';
@@ -248,7 +243,7 @@ export default function HomePage() {
               className="mb-4 p-4 rounded-xl bg-[#392125] border border-[#5c2d33] text-[#f23f43] flex items-center justify-between gap-3 text-xs"
             >
               <div className="flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 shrink-0" />
+                <Icon name="warning" size={16} className="shrink-0" />
                 <span>{progress.error || 'Failed to wumpress media.'}</span>
               </div>
               <button
@@ -286,9 +281,9 @@ export default function HomePage() {
                 <div className="flex items-center gap-3 overflow-hidden">
                   <div className="w-10 h-10 rounded-xl bg-[#313338] border border-[#3f4147] flex items-center justify-center shrink-0">
                     {metadata.type === 'video' ? (
-                      <FileVideo className="w-5 h-5 text-[#5865f2]" />
+                      <Icon name="movie" size={20} className="text-[#5865f2]" />
                     ) : (
-                      <FileImage className="w-5 h-5 text-[#5865f2]" />
+                      <Icon name="image" size={20} className="text-[#5865f2]" />
                     )}
                   </div>
                   <div className="overflow-hidden">
@@ -312,7 +307,7 @@ export default function HomePage() {
                   onClick={handleReset}
                   className="px-3 py-1.5 rounded-xl bg-[#313338] hover:bg-[#383a40] border border-[#3f4147] text-xs text-[#949ba4] hover:text-white flex items-center gap-1.5 transition-colors shrink-0"
                 >
-                  <RotateCcw className="w-3 h-3" />
+                  <Icon name="restart_alt" size={14} />
                   Change
                 </button>
               </div>

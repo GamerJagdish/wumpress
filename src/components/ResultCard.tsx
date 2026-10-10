@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { motion } from 'motion/react';
 import confetti from 'canvas-confetti';
-import { Download, RefreshCw } from 'lucide-react';
+import Icon from './Icon';
 import { CompressionResult } from '../lib/types';
 import { formatBytes } from '../lib/calculator';
 
@@ -101,7 +101,7 @@ export default function ResultCard({ result, onReset }: ResultCardProps) {
           download={result.fileName}
           className="w-full sm:flex-1 py-3.5 px-5 rounded-xl bg-[#5865f2] hover:bg-[#4752c4] text-white font-bold text-center text-sm sm:text-base flex items-center justify-center gap-2 transition-colors select-none font-['Outfit']"
         >
-          <Download className="w-4 h-4" />
+          <Icon name="download" size={18} />
           Download
         </a>
 
@@ -110,7 +110,7 @@ export default function ResultCard({ result, onReset }: ResultCardProps) {
           onClick={onReset}
           className="w-full sm:w-auto py-3.5 px-5 rounded-xl bg-[#313338] hover:bg-[#383a40] border border-[#3f4147] text-[#f2f3f5] text-center text-sm sm:text-base font-bold flex items-center justify-center gap-2 transition-colors select-none font-['Outfit']"
         >
-          <RefreshCw className="w-4 h-4 text-[#949ba4]" />
+          <Icon name="refresh" size={18} className="text-[#949ba4]" />
           Wumpress Another
         </button>
       </div>

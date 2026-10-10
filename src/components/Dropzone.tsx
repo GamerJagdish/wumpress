@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { motion } from 'motion/react';
-import { UploadCloud } from 'lucide-react';
+import Icon from './Icon';
 
 interface DropzoneProps {
   onFileSelect: (file: File) => void;
@@ -88,7 +88,7 @@ export default function Dropzone({ onFileSelect, isProcessing }: DropzoneProps) 
                 : 'bg-[#313338] text-[#5865f2] border border-[#3f4147]'
             }`}
           >
-            <UploadCloud className="w-8 h-8 sm:w-10 sm:h-10 stroke-[2.2]" />
+            <Icon name="cloud_upload" size={38} />
           </motion.div>
 
           <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-2 font-['Outfit']">
