@@ -10,8 +10,8 @@ let loadPromise: Promise<FFmpeg> | null = null;
 let isMultiThreaded = false;
 const coreListeners = new Set<() => void>();
 
-const CORE_VERSION = '0.12.6';
-const MT_BASE_URL = `https://unpkg.com/@ffmpeg/core-mt@${CORE_VERSION}/dist/esm`;
+const CORE_VERSION = '0.12.10';
+const MT_BASE_URL = `https://unpkg.com/@ffmpeg/core-mt@${CORE_VERSION}/dist/umd`;
 const ST_BASE_URL = `https://unpkg.com/@ffmpeg/core@${CORE_VERSION}/dist/umd`;
 
 export function isMultiThreadSupported(): boolean {
@@ -109,8 +109,9 @@ export async function getFFmpeg(onLog?: (message: string) => void): Promise<FFmp
         if (onLog) onLog('[Wumpress] Multi-threaded engine active (all CPU cores engaged)');
         return ffmpeg;
       } catch (mtError) {
+        const errorMsg = mtError instanceof Error ? mtError.message : String(mtError);
         console.warn('Multi-threaded FFmpeg initialization failed, falling back to single-threaded:', mtError);
-        if (onLog) onLog('[Wumpress] Multi-thread init failed, switching to single-thread fallback...');
+        if (onLog) onLog(`[Wumpress] Multi-thread init failed (${errorMsg}), switching to single-thread fallback...`);
       }
     }
 
