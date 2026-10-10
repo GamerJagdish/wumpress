@@ -21,7 +21,10 @@ export async function inspectFile(file: File): Promise<MediaMetadata> {
       video.playsInline = true;
 
       const cleanUp = () => {
-        video.src = '';
+        video.onloadedmetadata = null;
+        video.onerror = null;
+        video.removeAttribute('src');
+        video.load();
       };
 
       video.onloadedmetadata = () => {
@@ -64,6 +67,8 @@ export async function inspectFile(file: File): Promise<MediaMetadata> {
     return new Promise((resolve) => {
       const img = new Image();
       img.onload = () => {
+        img.onload = null;
+        img.onerror = null;
         resolve({
           file,
           name: file.name,
@@ -76,6 +81,8 @@ export async function inspectFile(file: File): Promise<MediaMetadata> {
         });
       };
       img.onerror = () => {
+        img.onload = null;
+        img.onerror = null;
         resolve({
           file,
           name: file.name,

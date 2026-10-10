@@ -77,21 +77,21 @@ export default function ResultCard({ result, onReset }: ResultCardProps) {
 
       {/* Media Preview */}
       <div className="w-full bg-[#1e1f22] border border-[#383a40] rounded-xl overflow-hidden mb-5 flex items-center justify-center max-h-[320px]">
-        {result.mediaType === 'video' ? (
+        {result.mediaType === 'video' && result.downloadUrl ? (
           <video
             src={result.downloadUrl}
             controls
             playsInline
             className="w-full max-h-[320px] object-contain"
           />
-        ) : (
+        ) : result.downloadUrl ? (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
             src={result.downloadUrl}
             alt="Wumpressed result"
             className="max-h-[320px] w-auto object-contain"
           />
-        )}
+        ) : null}
       </div>
 
       {/* Actions */}
