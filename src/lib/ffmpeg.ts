@@ -3,9 +3,12 @@ import { toBlobURL, fetchFile } from '@ffmpeg/util';
 import { BitrateCalculation, getResolutionFilter } from './calculator';
 import { CompressionConfig, EncodingStats } from './types';
 
+export type FFmpegCoreType = '@ffmpeg/core-mt' | '@ffmpeg/core';
+
 let ffmpegInstance: FFmpeg | null = null;
 let loadPromise: Promise<FFmpeg> | null = null;
 let isMultiThreaded = false;
+const coreListeners = new Set<() => void>();
 
 const CORE_VERSION = '0.12.6';
 const MT_BASE_URL = `https://unpkg.com/@ffmpeg/core-mt@${CORE_VERSION}/dist/esm`;
@@ -21,6 +24,33 @@ export function isMultiThreadSupported(): boolean {
 
 export function getIsMultiThreaded(): boolean {
   return isMultiThreaded;
+}
+
+export function getDetectedCore(): FFmpegCoreType {
+  if (typeof window === 'undefined') {
+    return '@ffmpeg/core-mt';
+  }
+  if (ffmpegInstance && ffmpegInstance.loaded) {
+    return isMultiThreaded ? '@ffmpeg/core-mt' : '@ffmpeg/core';
+  }
+  return isMultiThreadSupported() ? '@ffmpeg/core-mt' : '@ffmpeg/core';
+}
+
+export function subscribeCoreChange(listener: () => void): () => void {
+  coreListeners.add(listener);
+  return () => {
+    coreListeners.delete(listener);
+  };
+}
+
+function notifyCoreChange() {
+  coreListeners.forEach((listener) => {
+    try {
+      listener();
+    } catch (e) {
+      console.error('Error in core listener:', e);
+    }
+  });
 }
 
 export function parseEncodingStats(logLine: string): EncodingStats | null {
@@ -75,6 +105,7 @@ export async function getFFmpeg(onLog?: (message: string) => void): Promise<FFmp
 
         isMultiThreaded = true;
         ffmpegInstance = ffmpeg;
+        notifyCoreChange();
         if (onLog) onLog('[Wumpress] Multi-threaded engine active (all CPU cores engaged)');
         return ffmpeg;
       } catch (mtError) {
@@ -96,6 +127,7 @@ export async function getFFmpeg(onLog?: (message: string) => void): Promise<FFmp
 
       isMultiThreaded = false;
       ffmpegInstance = ffmpeg;
+      notifyCoreChange();
       if (onLog) onLog('[Wumpress] Single-threaded engine active');
       return ffmpeg;
     } catch (error) {

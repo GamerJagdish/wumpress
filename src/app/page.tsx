@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useSyncExternalStore } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Icon from '@/components/Icon';
 
@@ -14,7 +14,12 @@ import ClickSpark from '@/components/ClickSpark';
 
 import { inspectFile } from '@/lib/media-inspector';
 import { calculateVideoBitrates, formatBytes, formatDuration } from '@/lib/calculator';
-import { compressVideo, compressGif } from '@/lib/ffmpeg';
+import {
+  compressVideo,
+  compressGif,
+  getDetectedCore,
+  subscribeCoreChange,
+} from '@/lib/ffmpeg';
 import { compressImage } from '@/lib/image-compressor';
 import {
   MediaMetadata,
@@ -44,6 +49,11 @@ export default function HomePage() {
   });
   const [logs, setLogs] = useState<string[]>([]);
   const [result, setResult] = useState<CompressionResult | null>(null);
+  const coreType = useSyncExternalStore(
+    subscribeCoreChange,
+    getDetectedCore,
+    () => '@ffmpeg/core-mt'
+  );
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -343,7 +353,17 @@ export default function HomePage() {
       </main>
 
         <footer className="w-full py-6 text-center text-xs text-[#949ba4]">
-          Wumpress v1.0
+          <a
+            href="https://ffmpegwasm.netlify.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-white transition-colors duration-150 inline-block"
+          >
+            Wumpress v1.0 using{' '}
+            <span className="text-[#dbdee1] underline underline-offset-2">
+              {coreType}
+            </span>
+          </a>
         </footer>
       </div>
     </ClickSpark>
