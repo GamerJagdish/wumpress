@@ -363,7 +363,7 @@ export default function HomePage() {
           </a>{' '}
           using{' '}
           <a
-            href="https://ffmpegwasm.netlify.app"
+            href="https://github.com/ffmpegwasm/ffmpeg.wasm"
             target="_blank"
             rel="noopener noreferrer"
             className="text-[#949ba4] hover:text-white underline underline-offset-2 transition-colors duration-150"
