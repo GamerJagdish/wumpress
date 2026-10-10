@@ -131,7 +131,7 @@ export async function compressImage({
   const baseName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
   return {
     blob: bestBlob,
-    fileName: `${baseName}_compressed.${outputExtension}`,
+    fileName: `${baseName}_wumpressed.${outputExtension}`,
   };
 }
 

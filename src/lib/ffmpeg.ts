@@ -190,7 +190,7 @@ export async function compressVideo({
     const cleanBaseName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
     return {
       blob,
-      fileName: `${cleanBaseName}_compressed.mp4`,
+      fileName: `${cleanBaseName}_wumpressed.mp4`,
     };
   } finally {
     ffmpeg.off('progress', progressHandler);
@@ -252,7 +252,7 @@ export async function convertGifToMp4({
     const cleanBaseName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
     return {
       blob,
-      fileName: `${cleanBaseName}_loop.mp4`,
+      fileName: `${cleanBaseName}_wumpressed.mp4`,
     };
   } finally {
     //

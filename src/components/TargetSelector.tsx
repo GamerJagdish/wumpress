@@ -22,7 +22,7 @@ export default function TargetSelector({
         <span className="text-xs sm:text-sm uppercase tracking-wider text-[#949ba4] font-bold font-['Outfit']">
           Target Size
         </span>
-        <span className="text-xs sm:text-sm font-bold text-white font-mono px-2 py-0.5 rounded bg-[#313338] border border-[#3f4147]">
+        <span className="text-xs sm:text-sm font-bold text-white px-2 py-0.5 rounded bg-[#313338] border border-[#3f4147]">
           {targetMB} MB
         </span>
       </div>
@@ -56,7 +56,7 @@ export default function TargetSelector({
 
       {/* Custom target slider / input */}
       <div className="pt-3 border-t border-[#383a40] flex items-center gap-3">
-        <div className="flex items-center gap-1.5 text-xs text-[#949ba4] font-mono shrink-0">
+        <div className="flex items-center gap-1.5 text-xs text-[#949ba4] font-medium shrink-0">
           <Sliders className="w-3.5 h-3.5 text-[#5865f2]" />
           <span>Custom</span>
         </div>
@@ -85,9 +85,9 @@ export default function TargetSelector({
                 onTargetChange(val);
               }
             }}
-            className="w-14 px-2 py-1 text-center bg-[#1e1f22] border border-[#3f4147] rounded-md font-mono text-xs font-bold text-white focus:outline-none focus:border-[#5865f2]"
+            className="w-14 px-2 py-1 text-center bg-[#1e1f22] border border-[#3f4147] rounded-md text-xs font-bold text-white focus:outline-none focus:border-[#5865f2]"
           />
-          <span className="text-xs text-[#949ba4] font-mono">MB</span>
+          <span className="text-xs text-[#949ba4] font-medium">MB</span>
         </div>
       </div>
     </div>

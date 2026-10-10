@@ -26,18 +26,18 @@ export default function ProgressCard({ progress, logs }: ProgressCardProps) {
             <h3 className="text-xl sm:text-2xl font-bold text-white font-['Outfit']">
               Compressing
             </h3>
-            <p className="text-xs text-[#949ba4] font-mono mt-0.5">
+            <p className="text-xs text-[#949ba4] mt-0.5">
               {progress.currentStage || 'Working...'}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 self-end sm:self-auto font-mono text-xs">
+        <div className="flex items-center gap-3 self-end sm:self-auto text-xs">
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1e1f22] border border-[#383a40] text-[#949ba4]">
             <Clock className="w-3.5 h-3.5 text-[#5865f2]" />
             <span>{formatDuration(progress.timeElapsed)}</span>
           </div>
-          <div className="text-2xl sm:text-3xl font-black font-mono text-[#5865f2]">
+          <div className="text-2xl sm:text-3xl font-black text-[#5865f2]">
             {progress.progress}%
           </div>
         </div>
@@ -53,7 +53,7 @@ export default function ProgressCard({ progress, logs }: ProgressCardProps) {
 
       {/* Simplified live frame / fps stats for users who don't expand the log */}
       {stats && (stats.frame || stats.time) && (
-        <div className="p-3 rounded-xl bg-[#1e1f22] border border-[#383a40] flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-[#dbdee1] mb-4">
+        <div className="p-3 rounded-xl bg-[#1e1f22] border border-[#383a40] flex flex-wrap items-center justify-between gap-2 text-xs text-[#dbdee1] mb-4">
           <div className="flex items-center gap-2">
             <span className="text-[#949ba4]">Frame:</span>
             <span className="font-bold text-white">{stats.frame ?? 'n/a'}</span>
@@ -84,7 +84,7 @@ export default function ProgressCard({ progress, logs }: ProgressCardProps) {
         <button
           type="button"
           onClick={() => setShowLogs(!showLogs)}
-          className="flex items-center gap-2 text-xs font-mono text-[#949ba4] hover:text-white transition-colors"
+          className="flex items-center gap-2 text-xs text-[#949ba4] hover:text-white transition-colors"
         >
           <Terminal className="w-3.5 h-3.5 text-[#5865f2]" />
           <span>Raw Logs ({logs.length})</span>

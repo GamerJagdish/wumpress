@@ -24,7 +24,7 @@ export default function SpecsBoard({ metadata, calculation, targetMB }: SpecsBoa
           <span className="text-[11px] text-[#949ba4] font-medium block">
             Original
           </span>
-          <span className="text-base sm:text-lg font-bold font-mono text-white">
+          <span className="text-base sm:text-lg font-bold text-white">
             {formatBytes(metadata.originalSizeBytes)}
           </span>
         </div>
@@ -33,7 +33,7 @@ export default function SpecsBoard({ metadata, calculation, targetMB }: SpecsBoa
           <span className="text-[11px] text-[#949ba4] font-medium block">
             Target
           </span>
-          <span className="text-base sm:text-lg font-bold font-mono text-[#5865f2]">
+          <span className="text-base sm:text-lg font-bold text-[#5865f2]">
             {targetMB} MB
           </span>
         </div>
@@ -42,7 +42,7 @@ export default function SpecsBoard({ metadata, calculation, targetMB }: SpecsBoa
           <span className="text-[11px] text-[#949ba4] font-medium block">
             Estimated Savings
           </span>
-          <span className="text-base sm:text-lg font-bold font-mono text-[#23a55a]">
+          <span className="text-base sm:text-lg font-bold text-[#23a55a]">
             -{reductionPercent}%
           </span>
         </div>
@@ -51,7 +51,7 @@ export default function SpecsBoard({ metadata, calculation, targetMB }: SpecsBoa
           <span className="text-[11px] text-[#949ba4] font-medium block">
             {metadata.type === 'video' ? 'Video Bitrate' : 'Output Format'}
           </span>
-          <span className="text-base sm:text-lg font-bold font-mono text-white">
+          <span className="text-base sm:text-lg font-bold text-white">
             {metadata.type === 'video'
               ? formatBitrate(calculation.videoBitrateKbps)
               : 'WebP'}

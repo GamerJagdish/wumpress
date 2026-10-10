@@ -244,7 +244,7 @@ export default function HomePage() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="mb-4 p-4 rounded-xl bg-[#392125] border border-[#5c2d33] text-[#f23f43] flex items-center justify-between gap-3 text-xs font-mono"
+              className="mb-4 p-4 rounded-xl bg-[#392125] border border-[#5c2d33] text-[#f23f43] flex items-center justify-between gap-3 text-xs"
             >
               <div className="flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 shrink-0" />
@@ -267,7 +267,6 @@ export default function HomePage() {
           {result ? (
             <ResultCard
               result={result}
-              targetMB={config.targetSizeMB}
               onReset={handleReset}
             />
           ) : isCompressing ? (
@@ -294,7 +293,7 @@ export default function HomePage() {
                     <h3 className="text-sm font-bold text-white truncate max-w-[200px] sm:max-w-md font-['Outfit']">
                       {metadata.name}
                     </h3>
-                    <div className="flex items-center gap-2 text-xs font-mono text-[#949ba4]">
+                    <div className="flex items-center gap-2 text-xs text-[#949ba4]">
                       <span>{formatBytes(metadata.originalSizeBytes)}</span>
                       {metadata.durationSeconds && (
                         <>
@@ -309,7 +308,7 @@ export default function HomePage() {
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="px-3 py-1.5 rounded-xl bg-[#313338] hover:bg-[#383a40] border border-[#3f4147] text-xs font-mono text-[#949ba4] hover:text-white flex items-center gap-1.5 transition-colors shrink-0"
+                  className="px-3 py-1.5 rounded-xl bg-[#313338] hover:bg-[#383a40] border border-[#3f4147] text-xs text-[#949ba4] hover:text-white flex items-center gap-1.5 transition-colors shrink-0"
                 >
                   <RotateCcw className="w-3 h-3" />
                   Change
@@ -352,7 +351,7 @@ export default function HomePage() {
         </div>
       </main>
 
-      <footer className="w-full py-6 text-center font-mono text-xs text-[#949ba4]">
+      <footer className="w-full py-6 text-center text-xs text-[#949ba4]">
         Wumpress v1.0
       </footer>
     </div>
