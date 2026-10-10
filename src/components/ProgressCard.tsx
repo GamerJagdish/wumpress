@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Loader2, Terminal, Clock, ChevronDown } from 'lucide-react';
 import { CompressionProgress } from '../lib/types';
@@ -14,6 +14,13 @@ interface ProgressCardProps {
 export default function ProgressCard({ progress, logs }: ProgressCardProps) {
   const [showLogs, setShowLogs] = useState(false);
   const stats = progress.stats;
+  const logsContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (showLogs && logsContainerRef.current) {
+      logsContainerRef.current.scrollTop = logsContainerRef.current.scrollHeight;
+    }
+  }, [logs.length, showLogs]);
 
   return (
     <div className="w-full bg-[#2b2d31] border border-[#383a40] rounded-2xl p-6 sm:p-8">
@@ -97,13 +104,14 @@ export default function ProgressCard({ progress, logs }: ProgressCardProps) {
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
-            className="mt-3 p-3 rounded-xl bg-[#1e1f22] border border-[#383a40] font-mono text-[11px] text-[#949ba4] max-h-48 overflow-y-auto space-y-1"
+            ref={logsContainerRef}
+            className="mt-3 p-3 rounded-xl bg-[#1e1f22] border border-[#383a40] font-mono text-[11px] max-h-60 overflow-y-auto space-y-1"
           >
             {logs.length === 0 ? (
-              <p>Waiting for output...</p>
+              <p className="text-[#949ba4]">Waiting for output...</p>
             ) : (
-              logs.slice(-30).map((log, idx) => (
-                <div key={idx} className="truncate">
+              logs.map((log, idx) => (
+                <div key={idx} className="whitespace-pre-wrap break-all leading-relaxed text-[#f2f3f5]">
                   {log}
                 </div>
               ))

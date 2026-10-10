@@ -15,6 +15,7 @@ import TargetSelector from '@/components/TargetSelector';
 import AdvancedSettings from '@/components/AdvancedSettings';
 import ProgressCard from '@/components/ProgressCard';
 import ResultCard from '@/components/ResultCard';
+import ClickSpark from '@/components/ClickSpark';
 
 import { inspectFile } from '@/lib/media-inspector';
 import { calculateVideoBitrates, formatBytes, formatDuration } from '@/lib/calculator';
@@ -132,7 +133,7 @@ export default function HomePage() {
             }));
           },
           onLog: (line) => {
-            setLogs((prev) => [...prev.slice(-100), line]);
+            setLogs((prev) => [...prev, line]);
           },
         });
         outputBlob = res.blob;
@@ -148,7 +149,7 @@ export default function HomePage() {
             }));
           },
           onLog: (line) => {
-            setLogs((prev) => [...prev.slice(-100), line]);
+            setLogs((prev) => [...prev, line]);
           },
         });
         outputBlob = res.blob;
@@ -231,8 +232,9 @@ export default function HomePage() {
   const isCompressing = progress.status === 'compressing';
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#1e1f22] text-[#f2f3f5]">
-      <Header />
+    <ClickSpark sparkColor="#5865f2">
+      <div className="min-h-screen flex flex-col bg-[#1e1f22] text-[#f2f3f5]">
+        <Header />
 
       <main className="flex-1 w-full max-w-2xl mx-auto px-4 py-4 sm:py-6 flex flex-col justify-center">
         {/* Error Alert */}
@@ -342,9 +344,10 @@ export default function HomePage() {
         </div>
       </main>
 
-      <footer className="w-full py-6 text-center text-xs text-[#949ba4]">
-        Wumpress v1.0
-      </footer>
-    </div>
+        <footer className="w-full py-6 text-center text-xs text-[#949ba4]">
+          Wumpress v1.0
+        </footer>
+      </div>
+    </ClickSpark>
   );
 }
