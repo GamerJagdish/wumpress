@@ -25,7 +25,7 @@ All processing runs 100% locally in your browser using WebAssembly and HTML5 Can
 
 - Next.js 16 (App Router, Webpack mode)
 - Tailwind CSS v4 & PostCSS
-- `@ffmpeg/ffmpeg` 0.12 (WebAssembly)
+- `@ffmpeg/ffmpeg` 0.12 (Multi-threaded WebAssembly with `@ffmpeg/core-mt`)
 - Motion
 - Google Fonts Icons (Material Symbols Rounded)
 - Fonts: Outfit, Google Sans Flex, Google Sans Code

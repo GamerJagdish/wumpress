@@ -5,9 +5,23 @@ import { CompressionConfig, EncodingStats } from './types';
 
 let ffmpegInstance: FFmpeg | null = null;
 let loadPromise: Promise<FFmpeg> | null = null;
+let isMultiThreaded = false;
 
 const CORE_VERSION = '0.12.6';
-const BASE_URL = `https://unpkg.com/@ffmpeg/core@${CORE_VERSION}/dist/umd`;
+const MT_BASE_URL = `https://unpkg.com/@ffmpeg/core-mt@${CORE_VERSION}/dist/esm`;
+const ST_BASE_URL = `https://unpkg.com/@ffmpeg/core@${CORE_VERSION}/dist/umd`;
+
+export function isMultiThreadSupported(): boolean {
+  return (
+    typeof window !== 'undefined' &&
+    window.crossOriginIsolated === true &&
+    typeof SharedArrayBuffer !== 'undefined'
+  );
+}
+
+export function getIsMultiThreaded(): boolean {
+  return isMultiThreaded;
+}
 
 export function parseEncodingStats(logLine: string): EncodingStats | null {
   if (!logLine || !logLine.includes('time=')) return null;
@@ -45,16 +59,44 @@ export async function getFFmpeg(onLog?: (message: string) => void): Promise<FFmp
       });
     }
 
+    // Attempt multi-threaded core when Cross-Origin Isolation and SharedArrayBuffer are available
+    if (isMultiThreadSupported()) {
+      try {
+        if (onLog) onLog('[Wumpress] Initializing multi-threaded WebAssembly engine (core-mt)...');
+        const coreURL = await toBlobURL(`${MT_BASE_URL}/ffmpeg-core.js`, 'text/javascript');
+        const wasmURL = await toBlobURL(`${MT_BASE_URL}/ffmpeg-core.wasm`, 'application/wasm');
+        const workerURL = await toBlobURL(`${MT_BASE_URL}/ffmpeg-core.worker.js`, 'text/javascript');
+
+        await ffmpeg.load({
+          coreURL,
+          wasmURL,
+          workerURL,
+        });
+
+        isMultiThreaded = true;
+        ffmpegInstance = ffmpeg;
+        if (onLog) onLog('[Wumpress] Multi-threaded engine active (all CPU cores engaged)');
+        return ffmpeg;
+      } catch (mtError) {
+        console.warn('Multi-threaded FFmpeg initialization failed, falling back to single-threaded:', mtError);
+        if (onLog) onLog('[Wumpress] Multi-thread init failed, switching to single-thread fallback...');
+      }
+    }
+
+    // Single-threaded fallback
     try {
-      const coreURL = await toBlobURL(`${BASE_URL}/ffmpeg-core.js`, 'text/javascript');
-      const wasmURL = await toBlobURL(`${BASE_URL}/ffmpeg-core.wasm`, 'application/wasm');
+      if (onLog) onLog('[Wumpress] Initializing single-threaded WebAssembly engine...');
+      const coreURL = await toBlobURL(`${ST_BASE_URL}/ffmpeg-core.js`, 'text/javascript');
+      const wasmURL = await toBlobURL(`${ST_BASE_URL}/ffmpeg-core.wasm`, 'application/wasm');
 
       await ffmpeg.load({
         coreURL,
         wasmURL,
       });
 
+      isMultiThreaded = false;
       ffmpegInstance = ffmpeg;
+      if (onLog) onLog('[Wumpress] Single-threaded engine active');
       return ffmpeg;
     } catch (error) {
       console.error('Failed to load FFmpeg:', error);
@@ -104,7 +146,7 @@ export async function compressVideo({
     }
   };
 
-  const ffmpeg = await getFFmpeg();
+  const ffmpeg = await getFFmpeg(onLog);
   ffmpeg.on('log', logHandler);
 
   const ext = file.name.split('.').pop() || 'mp4';
@@ -149,7 +191,9 @@ export async function compressVideo({
       '-preset',
       'veryfast',
       '-pix_fmt',
-      'yuv420p'
+      'yuv420p',
+      '-threads',
+      '0'
     );
 
     if (config.fpsMode === '30') {
@@ -246,7 +290,7 @@ export async function compressGif({
         ? `fps=${fps},scale=trunc(iw*${scale}/2)*2:-1:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=${maxColors}[p];[s1][p]paletteuse=dither=bayer:bayer_scale=3`
         : `fps=${fps},split[s0][s1];[s0]palettegen=max_colors=${maxColors}[p];[s1][p]paletteuse=dither=bayer:bayer_scale=3`;
 
-    const args = ['-i', inputFileName, '-vf', filter, '-y', outputFileName];
+    const args = ['-i', inputFileName, '-vf', filter, '-threads', '0', '-y', outputFileName];
 
     onProgress(50, 'Encoding GIF...');
     await ffmpeg.exec(args);
