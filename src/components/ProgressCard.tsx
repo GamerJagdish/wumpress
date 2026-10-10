@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
 import Icon from './Icon';
-import CountUp from './CountUp';
 import { CompressionProgress } from '../lib/types';
 import { formatDuration } from '../lib/calculator';
 
@@ -64,8 +63,8 @@ export default function ProgressCard({ progress, logs }: ProgressCardProps) {
             <Icon name="schedule" size={14} className="text-[#5865f2]" />
             <span>{formatDuration(progress.timeElapsed)}</span>
           </div>
-          <div className="text-2xl sm:text-3xl font-black text-[#5865f2] tabular-nums">
-            <CountUp to={progress.progress} duration={0.3} />%
+          <div className="text-2xl sm:text-3xl font-black text-[#5865f2]">
+            {progress.progress}%
           </div>
         </div>
       </div>

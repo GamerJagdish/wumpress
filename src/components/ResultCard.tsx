@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 import { motion } from 'motion/react';
 import confetti from 'canvas-confetti';
 import Icon from './Icon';
-import CountUp from './CountUp';
 import { CompressionResult } from '../lib/types';
 import { formatBytes } from '../lib/calculator';
 
@@ -70,8 +69,8 @@ export default function ResultCard({ result, onReset }: ResultCardProps) {
           <span className="text-[#5865f2]">
             {formatBytes(result.outputSizeBytes)}
           </span>
-          <span className="text-[#23a55a] tabular-nums">
-            (-<CountUp to={result.savingsPercentage} duration={0.8} />%)
+          <span className="text-[#23a55a]">
+            (-{result.savingsPercentage}%)
           </span>
         </div>
       </div>
