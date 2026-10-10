@@ -1,22 +1,9 @@
-import type { Metadata } from "next";
-import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
-import "./globals.css";
-
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-display",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
+import type { Metadata } from 'next';
+import './globals.css';
 
 export const metadata: Metadata = {
-  title: "WAMPRESS / Discord Media Cruncher",
-  description: "Compress video and image files directly in your browser under Discord's 20MB limit.",
+  title: 'Wumpress',
+  description: 'Compress videos and images under Discord file limits.',
 };
 
 export default function RootLayout({
@@ -25,11 +12,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      lang="en"
-      className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} dark`}
-    >
-      <body className="min-h-screen bg-[#070809] text-[#f4f5f7] font-sans antialiased selection:bg-[#e2fd52] selection:text-black">
+    <html lang="en" className="dark">
+      <body className="min-h-screen bg-[#1e1f22] text-[#f2f3f5] antialiased selection:bg-[#5865f2] selection:text-white flex flex-col">
         {children}
       </body>
     </html>

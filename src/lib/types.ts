@@ -18,7 +18,7 @@ export interface MediaMetadata {
 
 export interface CompressionConfig {
   targetSizeMB: number;
-  safetyFactor: number; // e.g. 0.94 - 0.96 to prevent container overhead overshoot
+  safetyFactor: number;
   audioMode: AudioMode;
   scaleMode: ScaleMode;
   fpsMode: FpsMode;
@@ -35,13 +35,21 @@ export type CompressionStatus =
   | 'completed'
   | 'error';
 
+export interface EncodingStats {
+  frame?: number;
+  fps?: number;
+  time?: string;
+  speed?: string;
+  bitrate?: string;
+}
+
 export interface CompressionProgress {
   status: CompressionStatus;
-  progress: number; // 0 to 100
+  progress: number;
   currentStage: string;
-  timeElapsed: number; // in seconds
+  timeElapsed: number;
   error: string | null;
-  logLine?: string;
+  stats?: EncodingStats;
 }
 
 export interface CompressionResult {

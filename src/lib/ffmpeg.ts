@@ -1,13 +1,31 @@
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { toBlobURL, fetchFile } from '@ffmpeg/util';
 import { BitrateCalculation, getResolutionFilter } from './calculator';
-import { CompressionConfig } from './types';
+import { CompressionConfig, EncodingStats } from './types';
 
 let ffmpegInstance: FFmpeg | null = null;
 let loadPromise: Promise<FFmpeg> | null = null;
 
 const CORE_VERSION = '0.12.6';
 const BASE_URL = `https://unpkg.com/@ffmpeg/core@${CORE_VERSION}/dist/umd`;
+
+export function parseEncodingStats(logLine: string): EncodingStats | null {
+  if (!logLine || !logLine.includes('time=')) return null;
+
+  const frameMatch = logLine.match(/frame=\s*(\d+)/);
+  const fpsMatch = logLine.match(/fps=\s*([\d.]+)/);
+  const timeMatch = logLine.match(/time=\s*([\d:.]+)/);
+  const speedMatch = logLine.match(/speed=\s*([\d.]+x)/);
+  const bitrateMatch = logLine.match(/bitrate=\s*([\d.]+kbits\/s)/);
+
+  return {
+    frame: frameMatch ? parseInt(frameMatch[1], 10) : undefined,
+    fps: fpsMatch ? Math.round(parseFloat(fpsMatch[1])) : undefined,
+    time: timeMatch ? timeMatch[1].split('.')[0] : undefined,
+    speed: speedMatch ? speedMatch[1] : undefined,
+    bitrate: bitrateMatch ? bitrateMatch[1] : undefined,
+  };
+}
 
 export async function getFFmpeg(onLog?: (message: string) => void): Promise<FFmpeg> {
   if (ffmpegInstance && ffmpegInstance.loaded) {
@@ -39,9 +57,9 @@ export async function getFFmpeg(onLog?: (message: string) => void): Promise<FFmp
       ffmpegInstance = ffmpeg;
       return ffmpeg;
     } catch (error) {
-      console.error('Failed to load FFmpeg WASM core:', error);
+      console.error('Failed to load FFmpeg:', error);
       throw new Error(
-        'Could not load WebAssembly video encoder. Please check your network connection and reload.'
+        'Could not initialize video encoder. Please check your internet connection.'
       );
     } finally {
       loadPromise = null;
@@ -56,7 +74,7 @@ export interface VideoCompressionOptions {
   durationSeconds: number;
   config: CompressionConfig;
   calculation: BitrateCalculation;
-  onProgress: (percent: number, logLine?: string) => void;
+  onProgress: (percent: number, stage?: string, stats?: EncodingStats) => void;
   onLog?: (line: string) => void;
 }
 
@@ -68,44 +86,57 @@ export async function compressVideo({
   onProgress,
   onLog,
 }: VideoCompressionOptions): Promise<{ blob: Blob; fileName: string }> {
-  const ffmpeg = await getFFmpeg(onLog);
+  let currentStats: EncodingStats | undefined;
+
+  const logHandler = ({ message }: { message: string }) => {
+    if (onLog) onLog(message);
+    const parsed = parseEncodingStats(message);
+    if (parsed) {
+      currentStats = parsed;
+      let stageDesc = 'Encoding video';
+      if (parsed.frame && parsed.fps) {
+        stageDesc = `Frame ${parsed.frame} • ${parsed.fps} fps`;
+        if (parsed.speed) stageDesc += ` • ${parsed.speed}`;
+      } else if (parsed.time) {
+        stageDesc = `${parsed.time} encoded`;
+      }
+      onProgress(-1, stageDesc, parsed);
+    }
+  };
+
+  const ffmpeg = await getFFmpeg();
+  ffmpeg.on('log', logHandler);
 
   const ext = file.name.split('.').pop() || 'mp4';
   const inputFileName = `input_${Date.now()}.${ext}`;
   const outputFileName = `output_${Date.now()}.mp4`;
 
-  // Track progress via ffmpeg's native progress hook
   const progressHandler = ({ progress, time }: { progress: number; time: number }) => {
     let pct = Math.round(progress * 100);
-    // If progress is 0 or negative, estimate from time / duration
     if ((pct <= 0 || pct > 100) && durationSeconds > 0 && time > 0) {
-      // time is in microseconds (us)
       const currentSeconds = time / 1000000;
       pct = Math.min(99, Math.round((currentSeconds / durationSeconds) * 100));
     }
     pct = Math.max(1, Math.min(99, pct));
-    onProgress(pct);
+    onProgress(pct, undefined, currentStats);
   };
 
   ffmpeg.on('progress', progressHandler);
 
   try {
-    onProgress(2, 'Loading video file into memory...');
+    onProgress(2, 'Loading video file...');
     const fileData = await fetchFile(file);
     await ffmpeg.writeFile(inputFileName, fileData);
 
-    onProgress(5, 'Configuring Discord-compliant video stream...');
+    onProgress(5, 'Setting up target bitrate...');
 
-    // Build FFmpeg command arguments
     const args: string[] = ['-i', inputFileName];
 
-    // Video filter for resolution scaling & even dimension enforcement
     const filter = getResolutionFilter(config.scaleMode, calculation.recommendedScale);
     if (filter) {
       args.push('-vf', filter);
     }
 
-    // Video codec: libx264 with targeted bitrate and buffer bounds
     args.push(
       '-c:v',
       'libx264',
@@ -121,38 +152,32 @@ export async function compressVideo({
       'yuv420p'
     );
 
-    // Frame rate constraints if specified
     if (config.fpsMode === '30') {
       args.push('-r', '30');
     } else if (config.fpsMode === '60') {
       args.push('-r', '60');
     }
 
-    // Audio encoding settings
     if (config.audioMode === 'mute') {
       args.push('-an');
     } else {
       args.push('-c:a', 'aac', '-b:a', `${calculation.audioBitrateKbps}k`, '-ac', '2');
     }
 
-    // Crucial for Discord: Faststart moves moov atom to beginning of file for instant web stream preview
     args.push('-movflags', '+faststart');
-
-    // Overwrite output
     args.push('-y', outputFileName);
 
-    onProgress(8, 'Crunching frames with WebAssembly...');
+    onProgress(8, 'Encoding video...');
     const exitCode = await ffmpeg.exec(args);
 
     if (exitCode !== 0) {
-      throw new Error(`FFmpeg processing failed with exit code ${exitCode}`);
+      throw new Error(`FFmpeg exited with error code ${exitCode}`);
     }
 
-    onProgress(98, 'Extracting compressed output...');
+    onProgress(98, 'Finalizing output file...');
     const data = (await ffmpeg.readFile(outputFileName)) as Uint8Array;
     const blob = new Blob([data.buffer as ArrayBuffer], { type: 'video/mp4' });
 
-    // Clean up memory in virtual filesystem
     try {
       await ffmpeg.deleteFile(inputFileName);
       await ffmpeg.deleteFile(outputFileName);
@@ -160,18 +185,16 @@ export async function compressVideo({
       // Ignore cleanup error
     }
 
-    onProgress(100, 'Video compression complete');
+    onProgress(100, 'Complete');
 
     const cleanBaseName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
-    const finalFileName = `${cleanBaseName}_compressed.mp4`;
-
     return {
       blob,
-      fileName: finalFileName,
+      fileName: `${cleanBaseName}_compressed.mp4`,
     };
   } finally {
-    // Unhook progress listener
     ffmpeg.off('progress', progressHandler);
+    ffmpeg.off('log', logHandler);
   }
 }
 
@@ -193,7 +216,7 @@ export async function convertGifToMp4({
     const fileData = await fetchFile(file);
     await ffmpeg.writeFile(inputFileName, fileData);
 
-    onProgress(30, 'Converting GIF frames to Discord MP4 video...');
+    onProgress(30, 'Converting GIF frames to MP4...');
     const args = [
       '-i',
       inputFileName,
@@ -215,7 +238,7 @@ export async function convertGifToMp4({
 
     await ffmpeg.exec(args);
 
-    onProgress(95, 'Reading converted MP4...');
+    onProgress(95, 'Writing video file...');
     const data = (await ffmpeg.readFile(outputFileName)) as Uint8Array;
     const blob = new Blob([data.buffer as ArrayBuffer], { type: 'video/mp4' });
 

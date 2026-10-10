@@ -1,47 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Google+Sans+Flex:wght@400;500;600;700&family=Google+Sans+Code:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-display: var(--font-display), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-mono), ui-monospace, monospace;
+  --font-display: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: 'Google Sans Flex', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'Google Sans Code', ui-monospace, monospace;
 }
 
 :root {
-  --background: #08090a;
-  --foreground: #f4f5f7;
+  --background: #1e1f22;
+  --foreground: #f2f3f5;
+  --card-bg: #2b2d31;
+  --input-bg: #313338;
+  --border-color: #383a40;
+  --blurple: #5865f2;
+  --blurple-hover: #4752c4;
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   overflow-x: hidden;
 }
 
-/* Custom crisp scrollbar */
+/* Custom comfy scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0d0f12;
+  background: #1e1f22;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #232732;
+  background: #383a40;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #363d4e;
+  background: #4e5058;
 }
 
 /* Tactile push effects */
 .tactile-button {
-  transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.12s ease;
+  transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.15s ease;
 }
 
 .tactile-button:active {
-  transform: translateY(2px) scale(0.98);
+  transform: scale(0.98);
 }
-

@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   FileVideo,
   FileImage,
-  Zap,
   RotateCcw,
   AlertTriangle,
 } from 'lucide-react';
@@ -54,7 +53,6 @@ export default function HomePage() {
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Stop elapsed timer on unmount
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -102,7 +100,7 @@ export default function HomePage() {
     setProgress({
       status: 'compressing',
       progress: 2,
-      currentStage: 'Preparing compression pipeline...',
+      currentStage: 'Preparing...',
       timeElapsed: 0,
       error: null,
     });
@@ -127,11 +125,12 @@ export default function HomePage() {
           durationSeconds: metadata.durationSeconds || 10,
           config,
           calculation,
-          onProgress: (pct, stage) => {
+          onProgress: (pct, stage, stats) => {
             setProgress((prev) => ({
               ...prev,
-              progress: pct,
+              progress: pct >= 0 ? pct : prev.progress,
               currentStage: stage || prev.currentStage,
+              stats: stats || prev.stats,
             }));
           },
           onLog: (line) => {
@@ -234,32 +233,10 @@ export default function HomePage() {
   const isCompressing = progress.status === 'compressing';
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#07080a] text-[#f4f5f8] selection:bg-[#e2fd52] selection:text-black">
+    <div className="min-h-screen flex flex-col bg-[#1e1f22] text-[#f2f3f5]">
       <Header />
 
-      <main className="flex-1 w-full max-w-4xl mx-auto px-4 py-8 sm:py-12">
-        {/* Hero Section */}
-        {!metadata && (
-          <motion.div
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-8 sm:mb-12"
-          >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#13161f] border border-[#232938] text-[11px] font-mono text-[#a2adbf] mb-4">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#e2fd52]" />
-              CLIENT-SIDE DISCORD MEDIA ENGINE
-            </div>
-            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight uppercase leading-[0.95] mb-4 font-sans">
-              CRUNCH UNDER <br />
-              <span className="text-[#e2fd52]">{config.targetSizeMB} MB</span> LIMIT
-            </h1>
-            <p className="text-sm sm:text-lg text-[#8592a6] max-w-xl mx-auto font-sans font-medium">
-              Compress heavy videos and images right inside your browser. No server uploads, zero
-              file limits, and instant Discord inline playback.
-            </p>
-          </motion.div>
-        )}
-
+      <main className="flex-1 w-full max-w-2xl mx-auto px-4 py-4 sm:py-6 flex flex-col justify-center">
         {/* Error Alert */}
         <AnimatePresence>
           {progress.status === 'error' && (
@@ -267,25 +244,25 @@ export default function HomePage() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="mb-6 p-4 rounded-xl bg-[#241215] border border-[#521c22] text-[#f87171] flex items-center justify-between gap-3 text-sm font-mono"
+              className="mb-4 p-4 rounded-xl bg-[#392125] border border-[#5c2d33] text-[#f23f43] flex items-center justify-between gap-3 text-xs font-mono"
             >
-              <div className="flex items-center gap-2.5">
-                <AlertTriangle className="w-4 h-4 text-[#ef4444] shrink-0" />
-                <span>{progress.error || 'Encountered an error while compressing.'}</span>
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 shrink-0" />
+                <span>{progress.error || 'Failed to compress media.'}</span>
               </div>
               <button
                 type="button"
                 onClick={handleReset}
-                className="px-3 py-1 rounded bg-[#3b171c] hover:bg-[#521c22] text-white text-xs font-bold shrink-0 transition-colors"
+                className="px-2.5 py-1 rounded bg-[#4e272d] hover:bg-[#5c2d33] text-white font-bold transition-colors"
               >
-                DISMISS
+                Dismiss
               </button>
             </motion.div>
           )}
         </AnimatePresence>
 
         {/* Main Content Area */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Result View */}
           {result ? (
             <ResultCard
@@ -294,46 +271,35 @@ export default function HomePage() {
               onReset={handleReset}
             />
           ) : isCompressing ? (
-            /* Active Progress View */
             <ProgressCard progress={progress} logs={logs} />
           ) : !metadata ? (
-            /* Upload Dropzone */
             <Dropzone onFileSelect={handleFileSelect} isProcessing={isCompressing} />
           ) : (
-            /* Staged Media Configuration View */
             <motion.div
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              className="space-y-6"
+              className="space-y-4"
             >
-              {/* Media Header Card */}
-              <div className="bg-[#0d1015] border border-[#1e2330] rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="flex items-center gap-3.5 w-full sm:w-auto">
-                  <div className="w-12 h-12 rounded-xl bg-[#141822] border border-[#252c3c] flex items-center justify-center shrink-0">
+              {/* Media File Card */}
+              <div className="bg-[#2b2d31] border border-[#383a40] rounded-2xl p-4 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3 overflow-hidden">
+                  <div className="w-10 h-10 rounded-xl bg-[#313338] border border-[#3f4147] flex items-center justify-center shrink-0">
                     {metadata.type === 'video' ? (
-                      <FileVideo className="w-6 h-6 text-[#38bdf8]" />
+                      <FileVideo className="w-5 h-5 text-[#5865f2]" />
                     ) : (
-                      <FileImage className="w-6 h-6 text-[#f472b6]" />
+                      <FileImage className="w-5 h-5 text-[#5865f2]" />
                     )}
                   </div>
                   <div className="overflow-hidden">
-                    <h3 className="text-base sm:text-lg font-bold text-white truncate max-w-xs sm:max-w-md font-sans">
+                    <h3 className="text-sm font-bold text-white truncate max-w-[200px] sm:max-w-md font-['Outfit']">
                       {metadata.name}
                     </h3>
-                    <div className="flex items-center gap-2 text-xs font-mono text-[#7b889d]">
+                    <div className="flex items-center gap-2 text-xs font-mono text-[#949ba4]">
                       <span>{formatBytes(metadata.originalSizeBytes)}</span>
                       {metadata.durationSeconds && (
                         <>
                           <span>•</span>
                           <span>{formatDuration(metadata.durationSeconds)}</span>
-                        </>
-                      )}
-                      {metadata.width && metadata.height && (
-                        <>
-                          <span>•</span>
-                          <span>
-                            {metadata.width}x{metadata.height}
-                          </span>
                         </>
                       )}
                     </div>
@@ -343,10 +309,10 @@ export default function HomePage() {
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="w-full sm:w-auto px-4 py-2 rounded-xl bg-[#141722] border border-[#232a3a] text-xs font-mono font-bold text-[#8d9ab0] hover:text-white hover:border-[#343e54] flex items-center justify-center gap-1.5 transition-colors"
+                  className="px-3 py-1.5 rounded-xl bg-[#313338] hover:bg-[#383a40] border border-[#3f4147] text-xs font-mono text-[#949ba4] hover:text-white flex items-center gap-1.5 transition-colors shrink-0"
                 >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  CHANGE FILE
+                  <RotateCcw className="w-3 h-3" />
+                  Change
                 </button>
               </div>
 
@@ -356,78 +322,38 @@ export default function HomePage() {
                 onTargetChange={(mb) => handleConfigChange({ targetSizeMB: mb })}
               />
 
-              {/* Calculated Specs Board */}
+              {/* Specs Board */}
               <SpecsBoard
                 metadata={metadata}
                 calculation={calculation}
                 targetMB={config.targetSizeMB}
               />
 
-              {/* Advanced Settings Drawer */}
+              {/* Advanced Settings */}
               <AdvancedSettings
                 config={config}
                 onChange={handleConfigChange}
                 mediaType={metadata.type}
               />
 
-              {/* Big Bold Action Button */}
+              {/* Compress Action Button */}
               <motion.button
                 type="button"
                 onClick={startCompression}
-                whileHover={{ scale: 1.015 }}
+                whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                className="w-full py-5 px-6 rounded-2xl bg-[#e2fd52] text-black font-black text-lg sm:text-2xl font-mono tracking-wider flex items-center justify-center gap-3 shadow-[0_6px_0_#9bb814] active:shadow-none active:translate-y-1.5 transition-all select-none"
+                className="w-full py-4 px-6 rounded-2xl bg-[#5865f2] hover:bg-[#4752c4] text-white font-bold text-base sm:text-lg tracking-wide transition-colors font-['Outfit'] select-none"
               >
-                <Zap className="w-6 h-6 text-black stroke-[3]" />
-                CRUNCH TO UNDER {config.targetSizeMB} MB
+                Compress to {config.targetSizeMB} MB
               </motion.button>
             </motion.div>
           )}
         </div>
-
-        {/* Feature Grid: Non-generic, functional brutalist badges */}
-        <div className="mt-16 sm:mt-24 pt-8 border-t border-[#161a23] grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
-          <div className="p-4 rounded-xl bg-[#0c0e13] border border-[#1b202c]">
-            <span className="text-[10px] font-mono uppercase text-[#e2fd52] font-bold block mb-1">
-              DISCORD COMPATIBLE
-            </span>
-            <h4 className="text-sm font-bold text-white mb-1">H.264 & FastStart</h4>
-            <p className="text-xs text-[#738094] leading-relaxed">
-              Muxes the MP4 moov atom to the front so videos stream instantly inline in Discord chat
-              channels.
-            </p>
-          </div>
-
-          <div className="p-4 rounded-xl bg-[#0c0e13] border border-[#1b202c]">
-            <span className="text-[10px] font-mono uppercase text-[#38bdf8] font-bold block mb-1">
-              ACCURATE BITRATE BUDGET
-            </span>
-            <h4 className="text-sm font-bold text-white mb-1">5% Safety Factor</h4>
-            <p className="text-xs text-[#738094] leading-relaxed">
-              Calculates precise bitrates with buffer caps to ensure files land cleanly under the 20
-              MB limit.
-            </p>
-          </div>
-
-          <div className="p-4 rounded-xl bg-[#0c0e13] border border-[#1b202c]">
-            <span className="text-[10px] font-mono uppercase text-[#4ade80] font-bold block mb-1">
-              ZERO DATA LOGGING
-            </span>
-            <h4 className="text-sm font-bold text-white mb-1">In-Browser WASM</h4>
-            <p className="text-xs text-[#738094] leading-relaxed">
-              Files never touch any cloud servers. All processing executes securely in your local
-              browser.
-            </p>
-          </div>
-        </div>
       </main>
 
-      <footer className="w-full border-t border-[#161a23] py-6 px-4 text-center font-mono text-xs text-[#5f6c80]">
-        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>WAMPRESS: DISCORD MEDIA COMPRESSION ENGINE</span>
-          <span>CLIENT-SIDE WEBASSEMBLY</span>
-        </div>
+      <footer className="w-full py-6 text-center font-mono text-xs text-[#949ba4]">
+        Wumpress v1.0
       </footer>
     </div>
   );
