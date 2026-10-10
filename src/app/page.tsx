@@ -177,6 +177,7 @@ export default function HomePage() {
 
       if (timerRef.current) clearInterval(timerRef.current);
 
+      const elapsedSeconds = Math.max(1, Math.floor((Date.now() - startTime) / 1000));
       const downloadUrl = URL.createObjectURL(outputBlob);
       const savingsPercentage = Math.max(
         0,
@@ -193,13 +194,14 @@ export default function HomePage() {
         savingsPercentage,
         fileName: finalFileName,
         mediaType: finalFileName.endsWith('.mp4') ? 'video' : metadata.type,
+        timeElapsed: elapsedSeconds,
       });
 
       setProgress({
         status: 'completed',
         progress: 100,
         currentStage: 'Done',
-        timeElapsed: Math.floor((Date.now() - startTime) / 1000),
+        timeElapsed: elapsedSeconds,
         error: null,
       });
     } catch (err: unknown) {

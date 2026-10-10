@@ -60,4 +60,5 @@ export interface CompressionResult {
   fileName: string;
   mediaType: MediaType;
   durationSeconds?: number;
+  timeElapsed?: number;
 }
