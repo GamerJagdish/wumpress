@@ -15,11 +15,20 @@ const MT_BASE_URL = `https://unpkg.com/@ffmpeg/core-mt@${CORE_VERSION}/dist/umd`
 const ST_BASE_URL = `https://unpkg.com/@ffmpeg/core@${CORE_VERSION}/dist/umd`;
 
 export function isMultiThreadSupported(): boolean {
-  return (
-    typeof window !== 'undefined' &&
-    window.crossOriginIsolated === true &&
-    typeof SharedArrayBuffer !== 'undefined'
-  );
+  if (typeof window === 'undefined') return false;
+  if (!window.crossOriginIsolated || typeof SharedArrayBuffer === 'undefined') {
+    return false;
+  }
+  // In Chromium-based browsers (Chrome, Edge, Brave), @ffmpeg/core-mt has a known
+  // upstream WebAssembly pthread deadlock during libx264 encoding that halts execution
+  // indefinitely at "Stream mapping". Only non-Chromium browsers (like Firefox) run core-mt reliably.
+  const isChromium =
+    /Chrome|Chromium|Edg/i.test(navigator.userAgent) &&
+    !/Firefox/i.test(navigator.userAgent);
+  if (isChromium) {
+    return false;
+  }
+  return true;
 }
 
 export function getIsMultiThreaded(): boolean {
@@ -28,7 +37,7 @@ export function getIsMultiThreaded(): boolean {
 
 export function getDetectedCore(): FFmpegCoreType {
   if (typeof window === 'undefined') {
-    return '@ffmpeg/core-mt';
+    return '@ffmpeg/core';
   }
   if (ffmpegInstance && ffmpegInstance.loaded) {
     return isMultiThreaded ? '@ffmpeg/core-mt' : '@ffmpeg/core';
@@ -82,12 +91,6 @@ export async function getFFmpeg(onLog?: (message: string) => void): Promise<FFmp
 
   loadPromise = (async () => {
     const ffmpeg = new FFmpeg();
-
-    if (onLog) {
-      ffmpeg.on('log', ({ message }) => {
-        onLog(message);
-      });
-    }
 
     // Attempt multi-threaded core when Cross-Origin Isolation and SharedArrayBuffer are available
     if (isMultiThreadSupported()) {
@@ -224,10 +227,12 @@ export async function compressVideo({
       '-preset',
       'veryfast',
       '-pix_fmt',
-      'yuv420p',
-      '-threads',
-      '0'
+      'yuv420p'
     );
+
+    if (isMultiThreaded) {
+      args.push('-threads', '2');
+    }
 
     if (config.fpsMode === '30') {
       args.push('-r', '30');
@@ -323,7 +328,10 @@ export async function compressGif({
         ? `fps=${fps},scale=trunc(iw*${scale}/2)*2:-1:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=${maxColors}[p];[s1][p]paletteuse=dither=bayer:bayer_scale=3`
         : `fps=${fps},split[s0][s1];[s0]palettegen=max_colors=${maxColors}[p];[s1][p]paletteuse=dither=bayer:bayer_scale=3`;
 
-    const args = ['-i', inputFileName, '-vf', filter, '-threads', '0', '-y', outputFileName];
+    const args = ['-i', inputFileName, '-vf', filter, '-y', outputFileName];
+    if (isMultiThreaded) {
+      args.splice(args.length - 2, 0, '-threads', '2');
+    }
 
     onProgress(50, 'Encoding GIF...');
     await ffmpeg.exec(args);
