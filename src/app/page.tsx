@@ -52,7 +52,7 @@ export default function HomePage() {
   const coreType = useSyncExternalStore(
     subscribeCoreChange,
     getDetectedCore,
-    () => '@ffmpeg/core'
+    () => '@ffmpeg/core-mt'
   );
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);

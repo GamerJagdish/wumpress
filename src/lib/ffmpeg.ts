@@ -15,20 +15,11 @@ const MT_BASE_URL = `https://unpkg.com/@ffmpeg/core-mt@${CORE_VERSION}/dist/umd`
 const ST_BASE_URL = `https://unpkg.com/@ffmpeg/core@${CORE_VERSION}/dist/umd`;
 
 export function isMultiThreadSupported(): boolean {
-  if (typeof window === 'undefined') return false;
-  if (!window.crossOriginIsolated || typeof SharedArrayBuffer === 'undefined') {
-    return false;
-  }
-  // In Chromium-based browsers (Chrome, Edge, Brave), @ffmpeg/core-mt has a known
-  // upstream WebAssembly pthread deadlock during libx264 encoding that halts execution
-  // indefinitely at "Stream mapping". Only non-Chromium browsers (like Firefox) run core-mt reliably.
-  const isChromium =
-    /Chrome|Chromium|Edg/i.test(navigator.userAgent) &&
-    !/Firefox/i.test(navigator.userAgent);
-  if (isChromium) {
-    return false;
-  }
-  return true;
+  return (
+    typeof window !== 'undefined' &&
+    window.crossOriginIsolated === true &&
+    typeof SharedArrayBuffer !== 'undefined'
+  );
 }
 
 export function getIsMultiThreaded(): boolean {
@@ -37,7 +28,7 @@ export function getIsMultiThreaded(): boolean {
 
 export function getDetectedCore(): FFmpegCoreType {
   if (typeof window === 'undefined') {
-    return '@ffmpeg/core';
+    return '@ffmpeg/core-mt';
   }
   if (ffmpegInstance && ffmpegInstance.loaded) {
     return isMultiThreaded ? '@ffmpeg/core-mt' : '@ffmpeg/core';
