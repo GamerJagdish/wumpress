@@ -243,7 +243,7 @@ export default function HomePage() {
               className="mb-4 p-4 rounded-xl bg-[#392125] border border-[#5c2d33] text-[#f23f43] flex items-center justify-between gap-3 text-xs"
             >
               <div className="flex items-center gap-2">
-                <Icon name="warning" size={16} className="shrink-0" />
+                <Icon name="error" size={16} className="shrink-0" />
                 <span>{progress.error || 'Failed to wumpress media.'}</span>
               </div>
               <button
@@ -307,7 +307,7 @@ export default function HomePage() {
                   onClick={handleReset}
                   className="px-3 py-1.5 rounded-xl bg-[#313338] hover:bg-[#383a40] border border-[#3f4147] text-xs text-[#949ba4] hover:text-white flex items-center gap-1.5 transition-colors shrink-0"
                 >
-                  <Icon name="restart_alt" size={14} />
+                  <Icon name="redo" size={14} />
                   Change
                 </button>
               </div>

@@ -99,19 +99,19 @@ export default function ResultCard({ result, onReset }: ResultCardProps) {
         <a
           href={result.downloadUrl}
           download={result.fileName}
-          className="w-full sm:flex-1 py-3.5 px-5 rounded-xl bg-[#5865f2] hover:bg-[#4752c4] text-white font-bold text-center text-sm sm:text-base flex items-center justify-center gap-2 transition-colors select-none font-['Outfit']"
+          className="w-full sm:flex-1 py-3.5 px-5 rounded-xl bg-[#5865f2] hover:bg-[#4752c4] text-white font-bold text-center text-sm sm:text-base flex items-center justify-center gap-2.5 transition-colors select-none font-['Outfit']"
         >
-          <Icon name="download" size={18} />
-          Download
+          <Icon name="download" size={22} />
+          <span>Download</span>
         </a>
 
         <button
           type="button"
           onClick={onReset}
-          className="w-full sm:w-auto py-3.5 px-5 rounded-xl bg-[#313338] hover:bg-[#383a40] border border-[#3f4147] text-[#f2f3f5] text-center text-sm sm:text-base font-bold flex items-center justify-center gap-2 transition-colors select-none font-['Outfit']"
+          className="w-full sm:w-auto py-3.5 px-5 rounded-xl bg-[#313338] hover:bg-[#383a40] border border-[#3f4147] text-[#f2f3f5] text-center text-sm sm:text-base font-bold flex items-center justify-center gap-2.5 transition-colors select-none font-['Outfit']"
         >
-          <Icon name="refresh" size={18} className="text-[#949ba4]" />
-          Wumpress Another
+          <Icon name="refresh" size={22} className="text-[#949ba4]" />
+          <span>Wumpress Another</span>
         </button>
       </div>
     </motion.div>
