@@ -38,7 +38,7 @@ export default function ResultCard({ result, onReset }: ResultCardProps) {
       <div className="pb-5 border-b border-[#383a40] mb-5 space-y-2">
         <div className="flex items-center gap-2.5">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-['Outfit']">
-            Compressed
+            Wumpressed
           </h2>
           <motion.svg
             initial={{ scale: 0, rotate: -25 }}
@@ -66,7 +66,6 @@ export default function ResultCard({ result, onReset }: ResultCardProps) {
           <span className="line-through text-[#949ba4]">
             {formatBytes(result.originalSizeBytes)}
           </span>
-          <span className="text-[#949ba4] font-normal">to</span>
           <span className="text-[#5865f2]">
             {formatBytes(result.outputSizeBytes)}
           </span>
@@ -89,7 +88,7 @@ export default function ResultCard({ result, onReset }: ResultCardProps) {
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
             src={result.downloadUrl}
-            alt="Compressed result"
+            alt="Wumpressed result"
             className="max-h-[320px] w-auto object-contain"
           />
         )}
@@ -112,7 +111,7 @@ export default function ResultCard({ result, onReset }: ResultCardProps) {
           className="w-full sm:w-auto py-3.5 px-5 rounded-xl bg-[#313338] hover:bg-[#383a40] border border-[#3f4147] text-[#f2f3f5] text-center text-sm sm:text-base font-bold flex items-center justify-center gap-2 transition-colors select-none font-['Outfit']"
         >
           <RefreshCw className="w-4 h-4 text-[#949ba4]" />
-          Compress Another
+          Wumpress Another
         </button>
       </div>
     </motion.div>

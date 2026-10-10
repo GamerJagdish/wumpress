@@ -1,5 +1,6 @@
 'use client';
 
+import { motion } from 'motion/react';
 import { Volume2, Volume1, VolumeX, SlidersHorizontal, Monitor } from 'lucide-react';
 import { CompressionConfig, MediaType } from '../lib/types';
 
@@ -27,46 +28,52 @@ export default function AdvancedSettings({
         </label>
         <div className="grid grid-cols-3 gap-2">
           {/* WebP */}
-          <button
+          <motion.button
             type="button"
             disabled={disabled}
             onClick={() => onChange({ imageFormat: 'webp' })}
-            className={`py-2 px-3 rounded-xl border text-xs font-bold transition-colors ${
+            whileTap={disabled ? {} : { scale: 0.96 }}
+            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+            className={`py-2 px-3 rounded-xl border text-xs font-bold transition-colors select-none font-['Outfit'] ${
               selectedFormat === 'webp'
                 ? 'border-[#5865f2] bg-[#5865f2] text-white'
                 : 'border-[#383a40] bg-[#313338] text-[#dbdee1] hover:border-[#4e5058]'
             }`}
           >
             {isAutoActive ? 'WebP (Auto)' : 'WebP'}
-          </button>
+          </motion.button>
 
           {/* JPEG */}
-          <button
+          <motion.button
             type="button"
             disabled={disabled}
             onClick={() => onChange({ imageFormat: 'jpeg' })}
-            className={`py-2 px-3 rounded-xl border text-xs font-bold transition-colors ${
+            whileTap={disabled ? {} : { scale: 0.96 }}
+            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+            className={`py-2 px-3 rounded-xl border text-xs font-bold transition-colors select-none font-['Outfit'] ${
               selectedFormat === 'jpeg'
                 ? 'border-[#5865f2] bg-[#5865f2] text-white'
                 : 'border-[#383a40] bg-[#313338] text-[#dbdee1] hover:border-[#4e5058]'
             }`}
           >
             JPEG
-          </button>
+          </motion.button>
 
           {/* PNG */}
-          <button
+          <motion.button
             type="button"
             disabled={disabled}
             onClick={() => onChange({ imageFormat: 'png' })}
-            className={`py-2 px-3 rounded-xl border text-xs font-bold transition-colors ${
+            whileTap={disabled ? {} : { scale: 0.96 }}
+            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+            className={`py-2 px-3 rounded-xl border text-xs font-bold transition-colors select-none font-['Outfit'] ${
               selectedFormat === 'png'
                 ? 'border-[#5865f2] bg-[#5865f2] text-white'
                 : 'border-[#383a40] bg-[#313338] text-[#dbdee1] hover:border-[#4e5058]'
             }`}
           >
             PNG
-          </button>
+          </motion.button>
         </div>
       </div>
     );
@@ -91,11 +98,13 @@ export default function AdvancedSettings({
             Audio
           </span>
           <div className="grid grid-cols-3 gap-2">
-            <button
+            <motion.button
               type="button"
               disabled={disabled}
               onClick={() => onChange({ audioMode: 'standard' })}
-              className={`flex flex-col items-center justify-center p-2.5 rounded-xl border text-xs font-bold transition-colors ${
+              whileTap={disabled ? {} : { scale: 0.96 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              className={`flex flex-col items-center justify-center p-2.5 rounded-xl border text-xs font-bold transition-colors select-none font-['Outfit'] ${
                 config.audioMode === 'standard'
                   ? 'border-[#5865f2] bg-[#5865f2] text-white'
                   : 'border-[#383a40] bg-[#313338] text-[#dbdee1] hover:border-[#4e5058]'
@@ -104,13 +113,15 @@ export default function AdvancedSettings({
               <Volume2 className="w-4 h-4 mb-1" />
               <span>Standard</span>
               <span className="text-[10px] opacity-75 font-normal">128 kbps</span>
-            </button>
+            </motion.button>
 
-            <button
+            <motion.button
               type="button"
               disabled={disabled}
               onClick={() => onChange({ audioMode: 'voice' })}
-              className={`flex flex-col items-center justify-center p-2.5 rounded-xl border text-xs font-bold transition-colors ${
+              whileTap={disabled ? {} : { scale: 0.96 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              className={`flex flex-col items-center justify-center p-2.5 rounded-xl border text-xs font-bold transition-colors select-none font-['Outfit'] ${
                 config.audioMode === 'voice'
                   ? 'border-[#5865f2] bg-[#5865f2] text-white'
                   : 'border-[#383a40] bg-[#313338] text-[#dbdee1] hover:border-[#4e5058]'
@@ -119,13 +130,15 @@ export default function AdvancedSettings({
               <Volume1 className="w-4 h-4 mb-1" />
               <span>Voice Only</span>
               <span className="text-[10px] opacity-75 font-normal">64 kbps</span>
-            </button>
+            </motion.button>
 
-            <button
+            <motion.button
               type="button"
               disabled={disabled}
               onClick={() => onChange({ audioMode: 'mute' })}
-              className={`flex flex-col items-center justify-center p-2.5 rounded-xl border text-xs font-bold transition-colors ${
+              whileTap={disabled ? {} : { scale: 0.96 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              className={`flex flex-col items-center justify-center p-2.5 rounded-xl border text-xs font-bold transition-colors select-none font-['Outfit'] ${
                 config.audioMode === 'mute'
                   ? 'border-[#5865f2] bg-[#5865f2] text-white'
                   : 'border-[#383a40] bg-[#313338] text-[#dbdee1] hover:border-[#4e5058]'
@@ -134,7 +147,7 @@ export default function AdvancedSettings({
               <VolumeX className="w-4 h-4 mb-1" />
               <span>Mute</span>
               <span className="text-[10px] opacity-75 font-normal">0 kbps</span>
-            </button>
+            </motion.button>
           </div>
         </div>
       )}
@@ -149,19 +162,21 @@ export default function AdvancedSettings({
           {(['auto', 'native', '720p', '480p'] as const).map((mode) => {
             const isSelected = config.scaleMode === mode;
             return (
-              <button
+              <motion.button
                 key={mode}
                 type="button"
                 disabled={disabled}
                 onClick={() => onChange({ scaleMode: mode })}
-                className={`py-2 px-2 text-center rounded-xl border text-xs uppercase font-bold transition-colors ${
+                whileTap={disabled ? {} : { scale: 0.96 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                className={`py-2 px-2 text-center rounded-xl border text-xs uppercase font-bold transition-colors select-none font-['Outfit'] ${
                   isSelected
                     ? 'border-[#5865f2] bg-[#5865f2] text-white'
                     : 'border-[#383a40] bg-[#313338] text-[#dbdee1] hover:border-[#4e5058]'
                 }`}
               >
                 {mode}
-              </button>
+              </motion.button>
             );
           })}
         </div>

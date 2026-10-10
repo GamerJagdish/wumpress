@@ -201,7 +201,7 @@ export default function HomePage() {
       if (timerRef.current) clearInterval(timerRef.current);
       console.error('Compression failed:', err);
       const message =
-        err instanceof Error ? err.message : 'Compression failed due to an unexpected error.';
+        err instanceof Error ? err.message : 'Wumpressing failed due to an unexpected error.';
       setProgress((prev) => ({
         ...prev,
         status: 'error',
@@ -249,7 +249,7 @@ export default function HomePage() {
             >
               <div className="flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 shrink-0" />
-                <span>{progress.error || 'Failed to compress media.'}</span>
+                <span>{progress.error || 'Failed to wumpress media.'}</span>
               </div>
               <button
                 type="button"
@@ -338,7 +338,7 @@ export default function HomePage() {
                 transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                 className="w-full py-4 px-6 rounded-2xl bg-[#5865f2] hover:bg-[#4752c4] active:bg-[#3c45a5] text-white font-bold text-base sm:text-lg tracking-wide transition-colors duration-150 font-['Outfit'] select-none"
               >
-                Compress to {config.targetSizeMB} MB
+                Wumpress to {config.targetSizeMB} MB
               </motion.button>
             </motion.div>
           )}

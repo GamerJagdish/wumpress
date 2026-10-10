@@ -3,7 +3,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Wumpress',
-  description: 'Compress videos and images under Discord file limits.',
+  description: 'Wumpress videos and images under Discord file limits.',
 };
 
 export default function RootLayout({

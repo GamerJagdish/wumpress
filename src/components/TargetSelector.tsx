@@ -1,7 +1,6 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { Sliders } from 'lucide-react';
 
 interface TargetSelectorProps {
   targetMB: number;
@@ -16,6 +15,9 @@ export default function TargetSelector({
   onTargetChange,
   disabled = false,
 }: TargetSelectorProps) {
+  const sliderValue = Math.min(Math.max(targetMB, 2), 100);
+  const sliderProgress = Math.min(100, Math.max(0, ((sliderValue - 2) / (100 - 2)) * 100));
+
   return (
     <div className="w-full bg-[#2b2d31] border border-[#383a40] rounded-2xl p-4 sm:p-5">
       <label className="text-xs uppercase tracking-wider text-[#949ba4] font-bold font-['Outfit'] block mb-2.5">
@@ -49,24 +51,26 @@ export default function TargetSelector({
       </div>
 
       {/* Custom target slider / input */}
-      <div className="pt-3 border-t border-[#383a40] flex items-center gap-3">
-        <div className="flex items-center gap-1.5 text-xs text-[#949ba4] font-medium shrink-0">
-          <Sliders className="w-3.5 h-3.5 text-[#5865f2]" />
-          <span>Custom</span>
-        </div>
+      <div className="pt-3.5 border-t border-[#383a40] flex items-center gap-3">
+        <span className="text-xs uppercase tracking-wider text-[#949ba4] font-bold font-['Outfit'] shrink-0 select-none">
+          Custom
+        </span>
 
         <input
           type="range"
           min="2"
           max="100"
           step="1"
-          value={targetMB}
+          value={sliderValue}
           disabled={disabled}
           onChange={(e) => onTargetChange(parseFloat(e.target.value))}
-          className="w-full h-2 bg-[#1e1f22] rounded-lg appearance-none cursor-pointer accent-[#5865f2]"
+          style={{
+            background: `linear-gradient(to right, #5865f2 ${sliderProgress}%, #1e1f22 ${sliderProgress}%)`,
+          }}
+          className="wumpress-slider w-full h-2 rounded-full cursor-pointer appearance-none border border-[#383a40] transition-all"
         />
 
-        <div className="flex items-center gap-1 shrink-0">
+        <div className="flex items-center gap-1.5 shrink-0 bg-[#1e1f22] border border-[#383a40] hover:border-[#4e5058] focus-within:border-[#5865f2] rounded-xl px-2.5 py-1.5 transition-colors">
           <input
             type="number"
             min="1"
@@ -79,9 +83,9 @@ export default function TargetSelector({
                 onTargetChange(val);
               }
             }}
-            className="w-14 px-2 py-1 text-center bg-[#1e1f22] border border-[#3f4147] rounded-md text-xs font-bold text-white focus:outline-none focus:border-[#5865f2]"
+            className="w-10 bg-transparent text-center text-xs font-bold text-white focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none font-['Outfit']"
           />
-          <span className="text-xs text-[#949ba4] font-medium">MB</span>
+          <span className="text-xs text-[#949ba4] font-bold select-none font-['Outfit']">MB</span>
         </div>
       </div>
     </div>

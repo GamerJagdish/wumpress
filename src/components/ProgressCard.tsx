@@ -50,7 +50,7 @@ export default function ProgressCard({ progress, logs }: ProgressCardProps) {
           </div>
           <div>
             <h3 className="text-xl sm:text-2xl font-bold text-white font-['Outfit']">
-              Compressing
+              Wumpressing
             </h3>
             <p className="text-xs text-[#949ba4] mt-0.5">
               {progress.currentStage || 'Working...'}

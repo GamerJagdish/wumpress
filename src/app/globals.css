@@ -51,3 +51,51 @@ body {
 .tactile-button:active {
   transform: scale(0.98);
 }
+
+/* Custom Wumpress Range Slider */
+input[type="range"].wumpress-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none;
+}
+
+input[type="range"].wumpress-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background-color: #ffffff;
+  border: 3px solid #5865f2;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.1s ease;
+}
+
+input[type="range"].wumpress-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+input[type="range"].wumpress-slider::-webkit-slider-thumb:active {
+  transform: scale(0.95);
+  background-color: #f2f3f5;
+}
+
+input[type="range"].wumpress-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background-color: #ffffff;
+  border: 3px solid #5865f2;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+input[type="range"].wumpress-slider::-moz-range-thumb:hover {
+  transform: scale(1.2);
+}
+
+input[type="range"].wumpress-slider::-moz-range-thumb:active {
+  transform: scale(0.95);
+}
