@@ -23,7 +23,6 @@ export interface CompressionConfig {
   scaleMode: ScaleMode;
   fpsMode: FpsMode;
   imageFormat: 'auto' | 'webp' | 'jpeg' | 'png';
-  convertToMp4IfGif: boolean;
 }
 
 export type CompressionStatus =

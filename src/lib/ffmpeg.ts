@@ -198,49 +198,62 @@ export async function compressVideo({
   }
 }
 
-export async function convertGifToMp4({
+export async function compressGif({
   file,
+  config,
   onProgress,
   onLog,
 }: {
   file: File;
+  config: CompressionConfig;
   onProgress: (percent: number, logLine?: string) => void;
   onLog?: (line: string) => void;
 }): Promise<{ blob: Blob; fileName: string }> {
   const ffmpeg = await getFFmpeg(onLog);
   const inputFileName = `input_${Date.now()}.gif`;
-  const outputFileName = `output_${Date.now()}.mp4`;
+  const outputFileName = `output_${Date.now()}.gif`;
 
   try {
     onProgress(10, 'Loading animated GIF...');
     const fileData = await fetchFile(file);
     await ffmpeg.writeFile(inputFileName, fileData);
 
-    onProgress(30, 'Converting GIF frames to MP4...');
-    const args = [
-      '-i',
-      inputFileName,
-      '-movflags',
-      'faststart',
-      '-pix_fmt',
-      'yuv420p',
-      '-vf',
-      'scale=trunc(iw/2)*2:trunc(ih/2)*2',
-      '-c:v',
-      'libx264',
-      '-crf',
-      '24',
-      '-preset',
-      'veryfast',
-      '-y',
-      outputFileName,
-    ];
+    onProgress(30, 'Optimizing GIF palette and frames...');
 
+    const targetBytes = config.targetSizeMB * 1024 * 1024 * config.safetyFactor;
+    const ratio = file.size > 0 ? targetBytes / file.size : 1;
+
+    let scale = 1;
+    let fps = 15;
+    let maxColors = 128;
+
+    if (ratio < 0.25) {
+      scale = 0.5;
+      fps = 10;
+      maxColors = 48;
+    } else if (ratio < 0.5) {
+      scale = 0.65;
+      fps = 12;
+      maxColors = 64;
+    } else if (ratio < 0.8) {
+      scale = 0.8;
+      fps = 14;
+      maxColors = 96;
+    }
+
+    const filter =
+      scale < 1
+        ? `fps=${fps},scale=trunc(iw*${scale}/2)*2:-1:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=${maxColors}[p];[s1][p]paletteuse=dither=bayer:bayer_scale=3`
+        : `fps=${fps},split[s0][s1];[s0]palettegen=max_colors=${maxColors}[p];[s1][p]paletteuse=dither=bayer:bayer_scale=3`;
+
+    const args = ['-i', inputFileName, '-vf', filter, '-y', outputFileName];
+
+    onProgress(50, 'Encoding GIF...');
     await ffmpeg.exec(args);
 
-    onProgress(95, 'Writing video file...');
+    onProgress(95, 'Writing GIF file...');
     const data = (await ffmpeg.readFile(outputFileName)) as Uint8Array;
-    const blob = new Blob([data.buffer as ArrayBuffer], { type: 'video/mp4' });
+    const blob = new Blob([data.buffer as ArrayBuffer], { type: 'image/gif' });
 
     try {
       await ffmpeg.deleteFile(inputFileName);
@@ -252,7 +265,7 @@ export async function convertGifToMp4({
     const cleanBaseName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
     return {
       blob,
-      fileName: `${cleanBaseName}_wumpressed.mp4`,
+      fileName: `${cleanBaseName}_wumpressed.gif`,
     };
   } finally {
     //

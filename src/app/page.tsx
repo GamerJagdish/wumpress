@@ -13,13 +13,12 @@ import Header from '@/components/Header';
 import Dropzone from '@/components/Dropzone';
 import TargetSelector from '@/components/TargetSelector';
 import AdvancedSettings from '@/components/AdvancedSettings';
-import SpecsBoard from '@/components/SpecsBoard';
 import ProgressCard from '@/components/ProgressCard';
 import ResultCard from '@/components/ResultCard';
 
 import { inspectFile } from '@/lib/media-inspector';
 import { calculateVideoBitrates, formatBytes, formatDuration } from '@/lib/calculator';
-import { compressVideo, convertGifToMp4 } from '@/lib/ffmpeg';
+import { compressVideo, compressGif } from '@/lib/ffmpeg';
 import { compressImage } from '@/lib/image-compressor';
 import {
   MediaMetadata,
@@ -35,7 +34,6 @@ const DEFAULT_CONFIG: CompressionConfig = {
   scaleMode: 'auto',
   fpsMode: 'auto',
   imageFormat: 'auto',
-  convertToMp4IfGif: true,
 };
 
 export default function HomePage() {
@@ -116,8 +114,8 @@ export default function HomePage() {
     }, 1000);
 
     try {
-      let outputBlob: Blob;
-      let finalFileName: string;
+      let outputBlob: Blob = metadata.file;
+      let finalFileName: string = metadata.name;
 
       if (metadata.type === 'video') {
         const res = await compressVideo({
@@ -138,14 +136,14 @@ export default function HomePage() {
           },
         });
         outputBlob = res.blob;
-        finalFileName = res.fileName;
-      } else if (metadata.type === 'gif' && config.convertToMp4IfGif) {
-        const res = await convertGifToMp4({
+      } else if (metadata.type === 'gif') {
+        const res = await compressGif({
           file: metadata.file,
+          config,
           onProgress: (pct, stage) => {
             setProgress((prev) => ({
               ...prev,
-              progress: pct,
+              progress: pct >= 0 ? pct : prev.progress,
               currentStage: stage || prev.currentStage,
             }));
           },
@@ -319,13 +317,6 @@ export default function HomePage() {
               <TargetSelector
                 targetMB={config.targetSizeMB}
                 onTargetChange={(mb) => handleConfigChange({ targetSizeMB: mb })}
-              />
-
-              {/* Specs Board */}
-              <SpecsBoard
-                metadata={metadata}
-                calculation={calculation}
-                targetMB={config.targetSizeMB}
               />
 
               {/* Advanced Settings */}
