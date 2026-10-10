@@ -66,29 +66,23 @@ export default function Dropzone({ onFileSelect, isProcessing }: DropzoneProps) 
       />
 
       <motion.div
-        layout
         onClick={triggerPicker}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        whileHover={isProcessing ? {} : { scale: 1.01 }}
-        whileTap={isProcessing ? {} : { scale: 0.985 }}
-        transition={{ type: 'spring', stiffness: 380, damping: 26 }}
-        className={`relative w-full rounded-2xl border-2 border-dashed cursor-pointer transition-all p-8 sm:p-14 text-center select-none ${
+        whileTap={isProcessing ? {} : { scale: 0.99 }}
+        transition={{ duration: 0.1 }}
+        className={`relative w-full rounded-2xl border-2 border-dashed cursor-pointer transition-colors duration-150 p-8 sm:p-14 text-center select-none ${
           isDragOver
             ? 'border-[#5865f2] bg-[#313338]'
-            : 'border-[#3f4147] bg-[#2b2d31] hover:border-[#5865f2]/70 hover:bg-[#313338]/80'
+            : 'border-[#3f4147] bg-[#2b2d31] hover:border-[#5865f2] hover:bg-[#313338]'
         }`}
       >
         <div className="flex flex-col items-center">
           <motion.div
-            animate={
-              isDragOver
-                ? { y: [-2, -6, -2], scale: 1.08 }
-                : { y: 0, scale: 1 }
-            }
-            transition={{ repeat: isDragOver ? Infinity : 0, duration: 0.8 }}
-            className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center mb-5 transition-colors ${
+            animate={isDragOver ? { scale: 1.05 } : { scale: 1 }}
+            transition={{ duration: 0.2 }}
+            className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center mb-5 transition-colors duration-150 ${
               isDragOver
                 ? 'bg-[#5865f2] text-white'
                 : 'bg-[#313338] text-[#5865f2] border border-[#3f4147]'
@@ -104,7 +98,7 @@ export default function Dropzone({ onFileSelect, isProcessing }: DropzoneProps) 
             Videos or images of any format to fit Discord.
           </p>
 
-          <div className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-[#5865f2] hover:bg-[#4752c4] text-white font-bold text-sm sm:text-base tracking-wide transition-colors">
+          <div className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-[#5865f2] hover:bg-[#4752c4] active:bg-[#3c45a5] text-white font-bold text-sm sm:text-base tracking-wide transition-colors duration-150 font-['Outfit']">
             Choose File
           </div>
         </div>

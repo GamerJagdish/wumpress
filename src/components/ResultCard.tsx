@@ -29,9 +29,9 @@ export default function ResultCard({ result, onReset }: ResultCardProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.15 }}
       className="w-full bg-[#2b2d31] border border-[#383a40] rounded-2xl p-5 sm:p-7 overflow-hidden"
     >
       {/* Sleek unified header without block boxes */}

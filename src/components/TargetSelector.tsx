@@ -18,14 +18,9 @@ export default function TargetSelector({
 }: TargetSelectorProps) {
   return (
     <div className="w-full bg-[#2b2d31] border border-[#383a40] rounded-2xl p-4 sm:p-5">
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-xs sm:text-sm uppercase tracking-wider text-[#949ba4] font-bold font-['Outfit']">
-          Target Size
-        </span>
-        <span className="text-xs sm:text-sm font-bold text-white px-2 py-0.5 rounded bg-[#313338] border border-[#3f4147]">
-          {targetMB} MB
-        </span>
-      </div>
+      <label className="text-xs uppercase tracking-wider text-[#949ba4] font-bold font-['Outfit'] block mb-2.5">
+        Target Size
+      </label>
 
       {/* Chunky Preset Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
@@ -37,10 +32,9 @@ export default function TargetSelector({
               type="button"
               disabled={disabled}
               onClick={() => onTargetChange(mb)}
-              whileHover={disabled ? {} : { scale: 1.02 }}
               whileTap={disabled ? {} : { scale: 0.96 }}
-              transition={{ type: 'spring', stiffness: 450, damping: 25 }}
-              className={`py-3 px-3 rounded-xl border text-center transition-all select-none font-['Outfit'] ${
+              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              className={`py-3 px-3 rounded-xl border text-center transition-colors duration-150 select-none font-['Outfit'] ${
                 isSelected
                   ? 'border-[#5865f2] bg-[#5865f2] text-white font-black'
                   : 'border-[#383a40] bg-[#313338] text-[#dbdee1] hover:border-[#4e5058] hover:bg-[#383a40]'

@@ -20,7 +20,7 @@ interface Spark {
 }
 
 export default function ClickSpark({
-  sparkColor = '#5865f2',
+  sparkColor = '#ffffff',
   sparkSize = 10,
   sparkRadius = 20,
   sparkCount = 8,

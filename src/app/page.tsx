@@ -232,7 +232,7 @@ export default function HomePage() {
   const isCompressing = progress.status === 'compressing';
 
   return (
-    <ClickSpark sparkColor="#5865f2">
+    <ClickSpark sparkColor="#ffffff">
       <div className="min-h-screen flex flex-col bg-[#1e1f22] text-[#f2f3f5]">
         <Header />
 
@@ -241,9 +241,10 @@ export default function HomePage() {
         <AnimatePresence>
           {progress.status === 'error' && (
             <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
               className="mb-4 p-4 rounded-xl bg-[#392125] border border-[#5c2d33] text-[#f23f43] flex items-center justify-between gap-3 text-xs"
             >
               <div className="flex items-center gap-2">
@@ -275,8 +276,9 @@ export default function HomePage() {
             <Dropzone onFileSelect={handleFileSelect} isProcessing={isCompressing} />
           ) : (
             <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.15 }}
               className="space-y-4"
             >
               {/* Media File Card */}
@@ -332,10 +334,9 @@ export default function HomePage() {
               <motion.button
                 type="button"
                 onClick={startCompression}
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                className="w-full py-4 px-6 rounded-2xl bg-[#5865f2] hover:bg-[#4752c4] text-white font-bold text-base sm:text-lg tracking-wide transition-colors font-['Outfit'] select-none"
+                whileTap={{ scale: 0.985 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                className="w-full py-4 px-6 rounded-2xl bg-[#5865f2] hover:bg-[#4752c4] active:bg-[#3c45a5] text-white font-bold text-base sm:text-lg tracking-wide transition-colors duration-150 font-['Outfit'] select-none"
               >
                 Compress to {config.targetSizeMB} MB
               </motion.button>

@@ -15,12 +15,31 @@ export default function ProgressCard({ progress, logs }: ProgressCardProps) {
   const [showLogs, setShowLogs] = useState(false);
   const stats = progress.stats;
   const logsContainerRef = useRef<HTMLDivElement>(null);
+  const isUserScrolledUpRef = useRef(false);
 
+  // Auto-scroll to bottom only if the user hasn't scrolled up to read earlier logs
   useEffect(() => {
-    if (showLogs && logsContainerRef.current) {
+    if (showLogs && logsContainerRef.current && !isUserScrolledUpRef.current) {
       logsContainerRef.current.scrollTop = logsContainerRef.current.scrollHeight;
     }
   }, [logs.length, showLogs]);
+
+  const handleLogsScroll = () => {
+    const el = logsContainerRef.current;
+    if (!el) return;
+    // Calculate distance from bottom
+    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    // If user is within 25px of the bottom, resume auto-scrolling
+    isUserScrolledUpRef.current = distanceFromBottom > 25;
+  };
+
+  const handleToggleLogs = () => {
+    const nextState = !showLogs;
+    if (nextState) {
+      isUserScrolledUpRef.current = false;
+    }
+    setShowLogs(nextState);
+  };
 
   return (
     <div className="w-full bg-[#2b2d31] border border-[#383a40] rounded-2xl p-6 sm:p-8">
@@ -90,7 +109,7 @@ export default function ProgressCard({ progress, logs }: ProgressCardProps) {
       <div>
         <button
           type="button"
-          onClick={() => setShowLogs(!showLogs)}
+          onClick={handleToggleLogs}
           className="flex items-center gap-2 text-xs text-[#949ba4] hover:text-white transition-colors"
         >
           <Terminal className="w-3.5 h-3.5 text-[#5865f2]" />
@@ -105,6 +124,7 @@ export default function ProgressCard({ progress, logs }: ProgressCardProps) {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             ref={logsContainerRef}
+            onScroll={handleLogsScroll}
             className="mt-3 p-3 rounded-xl bg-[#1e1f22] border border-[#383a40] font-mono text-[11px] max-h-60 overflow-y-auto space-y-1"
           >
             {logs.length === 0 ? (
