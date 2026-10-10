@@ -1,36 +1,96 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# WAMPRESS
+
+In-browser media compression engine designed to shrink videos, images, and animated GIFs to fit under Discord file limits (10 MB, 20 MB, 25 MB, 50 MB, or custom thresholds).
+
+All processing is executed entirely within the client's web browser using WebAssembly (FFmpeg.wasm) and HTML5 Canvas. Zero bytes are uploaded to external servers.
+
+---
+
+## Features
+
+- **Discord-Compliant Outputs**: Produces MP4 video using H.264 video codec, AAC audio, and the `faststart` flag (`-movflags +faststart`). Discord web, desktop, and mobile clients can stream the file inline without requiring users to download the complete file first.
+- **Target Bitrate Mathematics**: Dynamically inspects media duration and computes the maximum allowable video and audio bitrate budget with a 5% safety buffer to account for container muxing overhead.
+- **Client-Side Privacy**: Runs 100% locally on the device using WebAssembly. No server infrastructure, no data collection, no storage costs.
+- **Adaptive Image Processing**: Employs iterative binary-search quantization and canvas downscaling for images and WebP outputs.
+- **Animated GIF to MP4 Conversion**: Converts heavy GIFs into lightweight, looping MP4 videos that achieve up to 90% size reductions while rendering seamlessly in Discord chat.
+- **Expressive Tactile Interface**: Built with high-contrast neo-utilitarian styling, spring physics, and mobile-first touch optimization.
+
+---
+
+## Target Bitrate Formula
+
+To ensure videos strictly land beneath the specified target size, the engine applies the following formula:
+
+```text
+Target Kilobits = (Target Size in MB * 1024 * 1024 * 8 * 0.94) / 1000
+Total Bitrate (kbps) = Target Kilobits / Duration (seconds)
+Video Bitrate (kbps) = Total Bitrate - Audio Bitrate (128, 64, or 0 kbps)
+```
+
+The `0.94` factor reserves a 6% buffer for MP4 container metadata (moov and mdat boxes) and index headers, preventing overshoot.
+
+---
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Styling**: Tailwind CSS v4
+- **Video Engine**: `@ffmpeg/ffmpeg` (WebAssembly)
+- **Animation**: `motion` (Spring physics)
+- **Icons**: `lucide-react`
+- **Typography**: Space Grotesk and JetBrains Mono
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+Node.js 18 or newer and npm.
+
+### Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/your-username/wampress.git
+cd wampress
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Production Build
 
-## Learn More
+To compile an optimized static production build:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run build
+npm run start
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Browser Requirements
 
-## Deploy on Vercel
+- Chromium-based browsers (Chrome, Edge, Brave), Firefox, or Safari with WebAssembly support.
+- Hardware acceleration enabled for maximum encoding speed.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+
+MIT License.
