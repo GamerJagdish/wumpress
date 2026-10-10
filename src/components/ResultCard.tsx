@@ -96,23 +96,27 @@ export default function ResultCard({ result, onReset }: ResultCardProps) {
 
       {/* Actions */}
       <div className="flex flex-col sm:flex-row items-center gap-2.5">
-        <a
+        <motion.a
           href={result.downloadUrl}
           download={result.fileName}
-          className="w-full sm:flex-1 py-3.5 px-5 rounded-xl bg-[#5865f2] hover:bg-[#4752c4] text-white font-bold text-center text-sm sm:text-base flex items-center justify-center gap-1.5 transition-colors select-none font-['Outfit']"
+          whileTap={{ scale: 0.97 }}
+          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+          className="w-full sm:flex-1 py-3.5 px-5 rounded-xl bg-[#5865f2] hover:bg-[#4752c4] active:bg-[#3c45a5] text-white font-bold text-center text-sm sm:text-base flex items-center justify-center gap-1.5 transition-colors select-none font-['Outfit'] cursor-pointer"
         >
-          <Icon name="download" size={22} className="translate-y-[2px]" />
+          <Icon name="download" size={22} className="translate-y-[1px]" />
           <span>Download</span>
-        </a>
+        </motion.a>
 
-        <button
+        <motion.button
           type="button"
           onClick={onReset}
-          className="w-full sm:w-auto py-3.5 px-5 rounded-xl bg-[#313338] hover:bg-[#383a40] border border-[#3f4147] text-[#f2f3f5] text-center text-sm sm:text-base font-bold flex items-center justify-center gap-1.5 transition-colors select-none font-['Outfit']"
+          whileTap={{ scale: 0.97 }}
+          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+          className="w-full sm:w-auto py-3.5 px-5 rounded-xl bg-[#313338] hover:bg-[#383a40] active:bg-[#2b2d31] border border-[#3f4147] text-[#f2f3f5] text-center text-sm sm:text-base font-bold flex items-center justify-center gap-1.5 transition-colors select-none font-['Outfit'] cursor-pointer"
         >
-          <Icon name="refresh" size={22} className="text-[#949ba4] translate-y-[2px]" />
+          <Icon name="refresh" size={22} className="text-[#949ba4] translate-y-[1px]" />
           <span>Wumpress Another</span>
-        </button>
+        </motion.button>
       </div>
     </motion.div>
   );

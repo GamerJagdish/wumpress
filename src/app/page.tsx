@@ -302,14 +302,16 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                <button
+                <motion.button
                   type="button"
                   onClick={handleReset}
-                  className="px-3 py-1.5 rounded-xl bg-[#313338] hover:bg-[#383a40] border border-[#3f4147] text-xs text-[#949ba4] hover:text-white flex items-center gap-1.5 transition-colors shrink-0"
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                  className="px-3 py-1.5 rounded-xl bg-[#313338] hover:bg-[#383a40] active:bg-[#2b2d31] border border-[#3f4147] text-xs text-[#949ba4] hover:text-white flex items-center gap-1 transition-colors shrink-0 cursor-pointer"
                 >
-                  <Icon name="redo" size={14} />
-                  Change
-                </button>
+                  <Icon name="redo" size={14} className="translate-y-[0.5px]" />
+                  <span>Change</span>
+                </motion.button>
               </div>
 
               {/* Target Limit Selector */}
