@@ -2,16 +2,23 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
-import Icon from './Icon';
+import { Loader2, Clock, Terminal, ChevronDown, XCircle, ArrowLeft } from 'lucide-react';
 import { CompressionProgress } from '../lib/types';
 import { formatDuration } from '../lib/calculator';
 
 interface ProgressCardProps {
   progress: CompressionProgress;
   logs: string[];
+  onMinimize?: () => void;
+  onCancel?: () => void;
 }
 
-export default function ProgressCard({ progress, logs }: ProgressCardProps) {
+export default function ProgressCard({
+  progress,
+  logs,
+  onMinimize,
+  onCancel,
+}: ProgressCardProps) {
   const [showLogs, setShowLogs] = useState(false);
   const stats = progress.stats;
   const logsContainerRef = useRef<HTMLDivElement>(null);
@@ -46,7 +53,7 @@ export default function ProgressCard({ progress, logs }: ProgressCardProps) {
       <div className="flex items-start sm:items-center justify-between gap-3 mb-5">
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-10 h-10 rounded-xl bg-[#313338] border border-[#3f4147] flex items-center justify-center text-[#5865f2] shrink-0">
-            <Icon name="progress_activity" size={20} className="animate-spin" />
+            <Loader2 className="w-5 h-5 text-[#5865f2] animate-spin" />
           </div>
           <div className="min-w-0">
             <h3 className="text-xl sm:text-2xl font-bold text-white font-['Outfit'] truncate">
@@ -63,7 +70,7 @@ export default function ProgressCard({ progress, logs }: ProgressCardProps) {
             {progress.progress}%
           </div>
           <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-[#1e1f22] border border-[#383a40] text-xs text-[#949ba4] order-2 sm:order-1">
-            <Icon name="schedule" size={14} className="text-[#5865f2]" />
+            <Clock className="w-3.5 h-3.5 text-[#5865f2]" />
             <span>{formatDuration(progress.timeElapsed)}</span>
           </div>
         </div>
@@ -99,21 +106,45 @@ export default function ProgressCard({ progress, logs }: ProgressCardProps) {
         </div>
       )}
 
-      {/* Terminal log toggle */}
+      {/* Terminal log toggle and action buttons */}
       <div>
-        <button
-          type="button"
-          onClick={handleToggleLogs}
-          className="flex items-center gap-2 text-xs text-[#949ba4] hover:text-white transition-colors"
-        >
-          <Icon name="terminal" size={15} className="text-[#5865f2]" />
-          <span>Raw Logs ({logs.length})</span>
-          <Icon
-            name="expand_more"
-            size={16}
-            className={`transition-transform duration-200 ${showLogs ? 'rotate-180' : ''}`}
-          />
-        </button>
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <button
+            type="button"
+            onClick={handleToggleLogs}
+            className="flex items-center gap-2 text-xs text-[#949ba4] hover:text-white transition-colors cursor-pointer"
+          >
+            <Terminal className="w-3.5 h-3.5 text-[#5865f2]" />
+            <span>Raw Logs ({logs.length})</span>
+            <ChevronDown
+              className={`w-4 h-4 transition-transform duration-200 ${showLogs ? 'rotate-180' : ''}`}
+            />
+          </button>
+
+          <div className="flex items-center gap-2">
+            {onCancel && (
+              <button
+                type="button"
+                onClick={onCancel}
+                className="px-2.5 py-1 rounded-lg bg-[#313338] hover:bg-[#392125] text-xs text-[#949ba4] hover:text-[#f23f43] border border-[#3f4147] hover:border-[#5c2d33] transition-colors cursor-pointer flex items-center gap-1"
+              >
+                <XCircle className="w-3.5 h-3.5" />
+                <span>Cancel</span>
+              </button>
+            )}
+
+            {onMinimize && (
+              <button
+                type="button"
+                onClick={onMinimize}
+                className="px-3 py-1 rounded-lg bg-[#313338] hover:bg-[#383a40] text-xs font-bold text-[#dbdee1] hover:text-white border border-[#3f4147] transition-colors cursor-pointer flex items-center gap-1 font-['Outfit']"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Upload More</span>
+              </button>
+            )}
+          </div>
+        </div>
 
         {showLogs && (
           <motion.div

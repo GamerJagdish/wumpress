@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { motion } from 'motion/react';
 import confetti from 'canvas-confetti';
-import Icon from './Icon';
+import { Clock, Download, RefreshCw } from 'lucide-react';
 import { CompressionResult } from '../lib/types';
 import { formatBytes, formatDuration } from '../lib/calculator';
 
@@ -61,7 +61,7 @@ export default function ResultCard({ result, onReset }: ResultCardProps) {
 
           {typeof result.timeElapsed === 'number' && (
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1e1f22] border border-[#383a40] text-xs text-[#949ba4] shrink-0">
-              <Icon name="schedule" size={14} className="text-[#5865f2]" />
+              <Clock className="w-3.5 h-3.5 text-[#5865f2]" />
               <span>{formatDuration(result.timeElapsed)}</span>
             </div>
           )}
@@ -112,7 +112,7 @@ export default function ResultCard({ result, onReset }: ResultCardProps) {
           transition={{ type: 'spring', stiffness: 500, damping: 30 }}
           className="w-full sm:flex-1 py-3.5 px-5 rounded-xl bg-[#5865f2] hover:bg-[#4752c4] active:bg-[#3c45a5] text-white font-bold text-center text-sm sm:text-base flex items-center justify-center gap-1.5 transition-colors select-none font-['Outfit'] cursor-pointer"
         >
-          <Icon name="download" size={22} className="translate-y-[1px]" />
+          <Download className="w-5 h-5" />
           <span>Download</span>
         </motion.a>
 
@@ -123,7 +123,7 @@ export default function ResultCard({ result, onReset }: ResultCardProps) {
           transition={{ type: 'spring', stiffness: 500, damping: 30 }}
           className="w-full sm:w-auto py-3.5 px-5 rounded-xl bg-[#313338] hover:bg-[#383a40] active:bg-[#2b2d31] border border-[#3f4147] text-[#f2f3f5] text-center text-sm sm:text-base font-bold flex items-center justify-center gap-1.5 transition-colors select-none font-['Outfit'] cursor-pointer"
         >
-          <Icon name="refresh" size={22} className="text-[#949ba4] translate-y-[1px]" />
+          <RefreshCw className="w-5 h-5 text-[#949ba4]" />
           <span>Wumpress Another</span>
         </motion.button>
       </div>

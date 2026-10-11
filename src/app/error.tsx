@@ -3,8 +3,8 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'motion/react';
+import { AlertCircle, RotateCcw, Home } from 'lucide-react';
 import Header from '../components/Header';
-import Icon from '../components/Icon';
 import ClickSpark from '../components/ClickSpark';
 
 export default function ErrorPage({
@@ -31,7 +31,7 @@ export default function ErrorPage({
             className="w-full bg-[#2b2d31] border border-[#383a40] rounded-2xl p-6 sm:p-8 text-center space-y-5"
           >
             <div className="w-16 h-16 rounded-2xl bg-[#392125] border border-[#5c2d33] mx-auto flex items-center justify-center text-[#f23f43]">
-              <Icon name="error" size={32} />
+              <AlertCircle className="w-8 h-8" />
             </div>
 
             <div className="space-y-1.5">
@@ -54,7 +54,7 @@ export default function ErrorPage({
                 transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                 className="w-full sm:flex-1 py-3 px-5 rounded-xl bg-[#5865f2] hover:bg-[#4752c4] active:bg-[#3c45a5] text-white font-bold text-sm flex items-center justify-center gap-2 transition-colors select-none font-['Outfit'] cursor-pointer"
               >
-                <Icon name="refresh" size={18} />
+                <RotateCcw className="w-4.5 h-4.5" />
                 <span>Try Again</span>
               </motion.button>
 
@@ -67,7 +67,7 @@ export default function ErrorPage({
                   href="/"
                   className="w-full py-3 px-5 rounded-xl bg-[#313338] hover:bg-[#383a40] active:bg-[#2b2d31] border border-[#3f4147] text-[#f2f3f5] font-bold text-sm flex items-center justify-center gap-2 transition-colors select-none font-['Outfit'] cursor-pointer"
                 >
-                  <Icon name="home" size={18} className="text-[#949ba4]" />
+                  <Home className="w-4.5 h-4.5 text-[#949ba4]" />
                   <span>Return Home</span>
                 </Link>
               </motion.div>
