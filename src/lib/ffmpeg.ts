@@ -36,6 +36,18 @@ export function getDetectedCore(): FFmpegCoreType {
   return isMultiThreadSupported() ? '@ffmpeg/core-mt' : '@ffmpeg/core';
 }
 
+export function terminateFFmpeg(): void {
+  if (ffmpegInstance) {
+    try {
+      ffmpegInstance.terminate();
+    } catch (e) {
+      console.warn('Error terminating FFmpeg instance:', e);
+    }
+    ffmpegInstance = null;
+  }
+  loadPromise = null;
+}
+
 export function subscribeCoreChange(listener: () => void): () => void {
   coreListeners.add(listener);
   return () => {
