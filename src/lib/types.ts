@@ -62,3 +62,23 @@ export interface CompressionResult {
   durationSeconds?: number;
   timeElapsed?: number;
 }
+
+export interface HistoryItem {
+  id: string;
+  fileName: string;
+  originalSizeBytes: number;
+  outputSizeBytes: number;
+  savingsPercentage: number;
+  mediaType: MediaType;
+  durationSeconds?: number;
+  timeElapsed?: number;
+  timestamp: number;
+  blob: Blob;
+}
+
+export interface QueuedCompression {
+  id: string;
+  metadata: MediaMetadata;
+  config: CompressionConfig;
+}
+
