@@ -6,7 +6,8 @@ import { CompressionConfig, FpsMode, MediaType } from '../lib/types';
 interface AdvancedSettingsProps {
   config: CompressionConfig;
   onChange: (updated: Partial<CompressionConfig>) => void;
-  mediaType: MediaType;
+  mediaType?: MediaType;
+  mediaTypes?: MediaType[];
   disabled?: boolean;
 }
 
@@ -14,12 +15,23 @@ export default function AdvancedSettings({
   config,
   onChange,
   mediaType,
+  mediaTypes,
   disabled = false,
 }: AdvancedSettingsProps) {
-  if (mediaType === 'image') {
-    const selectedFormat = config.imageFormat === 'auto' ? 'webp' : config.imageFormat;
-    const isAutoActive = config.imageFormat === 'auto' || config.imageFormat === 'webp';
+  const types =
+    mediaTypes && mediaTypes.length > 0
+      ? new Set(mediaTypes)
+      : new Set([mediaType || 'video']);
 
+  const hasImage = types.has('image');
+  const hasVideo = types.has('video');
+  const hasGif = types.has('gif');
+
+  const selectedFormat = config.imageFormat === 'auto' ? 'webp' : config.imageFormat;
+  const isAutoActive = config.imageFormat === 'auto' || config.imageFormat === 'webp';
+
+  // If only images in batch
+  if (hasImage && !hasVideo && !hasGif) {
     return (
       <div className="w-full bg-[#2b2d31] border border-[#383a40] rounded-2xl p-4 sm:p-5">
         <label className="text-xs uppercase tracking-wider text-[#949ba4] font-bold font-['Outfit'] block mb-2.5">
@@ -78,16 +90,14 @@ export default function AdvancedSettings({
     );
   }
 
-  const isVideo = mediaType === 'video';
-
   return (
     <div className="w-full bg-[#2b2d31] border border-[#383a40] rounded-2xl p-4 sm:p-5 space-y-4">
       <label className="text-xs uppercase tracking-wider text-[#949ba4] font-bold font-['Outfit'] block">
-        {isVideo ? 'Audio, Resolution & Framerate' : 'Resolution'}
+        {hasVideo ? 'Audio, Resolution & Framerate' : hasGif ? 'Resolution' : 'Advanced Settings'}
       </label>
 
-      {/* Audio Profile - ONLY for video */}
-      {isVideo && (
+      {/* Audio Profile for Video */}
+      {hasVideo && (
         <div>
           <span className="text-xs text-[#949ba4] font-bold block mb-2 font-['Outfit']">
             Audio
@@ -144,37 +154,39 @@ export default function AdvancedSettings({
         </div>
       )}
 
-      {/* Resolution Scaling */}
-      <div>
-        <span className="text-xs text-[#949ba4] font-bold block mb-2 font-['Outfit']">
-          Resolution
-        </span>
-        <div className="grid grid-cols-4 gap-2">
-          {(['auto', 'native', '720p', '480p'] as const).map((mode) => {
-            const isSelected = config.scaleMode === mode;
-            return (
-              <motion.button
-                key={mode}
-                type="button"
-                disabled={disabled}
-                onClick={() => onChange({ scaleMode: mode })}
-                whileTap={disabled ? {} : { scale: 0.96 }}
-                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                className={`py-2 px-2 text-center rounded-xl border text-xs uppercase font-bold transition-colors select-none font-['Outfit'] ${
-                  isSelected
-                    ? 'border-[#5865f2] bg-[#5865f2] text-white'
-                    : 'border-[#383a40] bg-[#313338] text-[#dbdee1] hover:border-[#4e5058]'
-                }`}
-              >
-                {mode}
-              </motion.button>
-            );
-          })}
+      {/* Resolution Scaling for Video or GIF */}
+      {(hasVideo || hasGif) && (
+        <div>
+          <span className="text-xs text-[#949ba4] font-bold block mb-2 font-['Outfit']">
+            Resolution
+          </span>
+          <div className="grid grid-cols-4 gap-2">
+            {(['auto', 'native', '720p', '480p'] as const).map((mode) => {
+              const isSelected = config.scaleMode === mode;
+              return (
+                <motion.button
+                  key={mode}
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => onChange({ scaleMode: mode })}
+                  whileTap={disabled ? {} : { scale: 0.96 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                  className={`py-2 px-2 text-center rounded-xl border text-xs uppercase font-bold transition-colors select-none font-['Outfit'] ${
+                    isSelected
+                      ? 'border-[#5865f2] bg-[#5865f2] text-white'
+                      : 'border-[#383a40] bg-[#313338] text-[#dbdee1] hover:border-[#4e5058]'
+                  }`}
+                >
+                  {mode}
+                </motion.button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Frame Rate - ONLY for video */}
-      {isVideo && (
+      {/* Frame Rate for Video */}
+      {hasVideo && (
         <div>
           <span className="text-xs text-[#949ba4] font-bold block mb-2 font-['Outfit']">
             Frame Rate
@@ -205,6 +217,61 @@ export default function AdvancedSettings({
                 </motion.button>
               );
             })}
+          </div>
+        </div>
+      )}
+
+      {/* Image Format if mixed batch includes images */}
+      {hasImage && (
+        <div className="pt-2 border-t border-[#383a40]">
+          <span className="text-xs text-[#949ba4] font-bold block mb-2 font-['Outfit']">
+            Image Format (for images in bulk)
+          </span>
+          <div className="grid grid-cols-3 gap-2">
+            <motion.button
+              type="button"
+              disabled={disabled}
+              onClick={() => onChange({ imageFormat: 'webp' })}
+              whileTap={disabled ? {} : { scale: 0.96 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              className={`py-2 px-3 rounded-xl border text-xs font-bold transition-colors select-none font-['Outfit'] ${
+                selectedFormat === 'webp'
+                  ? 'border-[#5865f2] bg-[#5865f2] text-white'
+                  : 'border-[#383a40] bg-[#313338] text-[#dbdee1] hover:border-[#4e5058]'
+              }`}
+            >
+              {isAutoActive ? 'WebP (Auto)' : 'WebP'}
+            </motion.button>
+
+            <motion.button
+              type="button"
+              disabled={disabled}
+              onClick={() => onChange({ imageFormat: 'jpeg' })}
+              whileTap={disabled ? {} : { scale: 0.96 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              className={`py-2 px-3 rounded-xl border text-xs font-bold transition-colors select-none font-['Outfit'] ${
+                selectedFormat === 'jpeg'
+                  ? 'border-[#5865f2] bg-[#5865f2] text-white'
+                  : 'border-[#383a40] bg-[#313338] text-[#dbdee1] hover:border-[#4e5058]'
+              }`}
+            >
+              JPEG
+            </motion.button>
+
+            <motion.button
+              type="button"
+              disabled={disabled}
+              onClick={() => onChange({ imageFormat: 'png' })}
+              whileTap={disabled ? {} : { scale: 0.96 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              className={`py-2 px-3 rounded-xl border text-xs font-bold transition-colors select-none font-['Outfit'] ${
+                selectedFormat === 'png'
+                  ? 'border-[#5865f2] bg-[#5865f2] text-white'
+                  : 'border-[#383a40] bg-[#313338] text-[#dbdee1] hover:border-[#4e5058]'
+              }`}
+            >
+              PNG
+            </motion.button>
           </div>
         </div>
       )}

@@ -2,14 +2,14 @@
 
 import { useState, useRef } from 'react';
 import { motion } from 'motion/react';
-import Icon from './Icon';
+import { UploadCloud } from 'lucide-react';
 
 interface DropzoneProps {
-  onFileSelect: (file: File) => void;
+  onFilesSelect: (files: File[]) => void;
   isProcessing: boolean;
 }
 
-export default function Dropzone({ onFileSelect, isProcessing }: DropzoneProps) {
+export default function Dropzone({ onFilesSelect, isProcessing }: DropzoneProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -35,15 +35,15 @@ export default function Dropzone({ onFileSelect, isProcessing }: DropzoneProps) 
     if (isProcessing) return;
 
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const file = e.dataTransfer.files[0];
-      onFileSelect(file);
+      const files = Array.from(e.dataTransfer.files);
+      onFilesSelect(files);
     }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      onFileSelect(file);
+      const files = Array.from(e.target.files);
+      onFilesSelect(files);
       e.target.value = '';
     }
   };
@@ -63,6 +63,7 @@ export default function Dropzone({ onFileSelect, isProcessing }: DropzoneProps) 
         className="hidden"
         onChange={handleFileChange}
         disabled={isProcessing}
+        multiple
       />
 
       <motion.div
@@ -88,18 +89,18 @@ export default function Dropzone({ onFileSelect, isProcessing }: DropzoneProps) 
                 : 'bg-[#313338] text-[#5865f2] border border-[#3f4147]'
             }`}
           >
-            <Icon name="cloud_upload" size={38} />
+            <UploadCloud className="w-9 h-9 sm:w-11 sm:h-11 stroke-[2.2]" />
           </motion.div>
 
           <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-2 font-['Outfit']">
-            Drop your file here
+            Drop your files here
           </h2>
           <p className="text-sm sm:text-base text-[#949ba4] max-w-sm mx-auto mb-6">
             Videos or images of any format to fit Discord.
           </p>
 
           <div className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-[#5865f2] hover:bg-[#4752c4] active:bg-[#3c45a5] text-white font-bold text-sm sm:text-base tracking-wide transition-colors duration-150 font-['Outfit']">
-            Choose File
+            Choose Files
           </div>
         </div>
       </motion.div>
