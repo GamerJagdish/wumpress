@@ -893,7 +893,7 @@ export default function HomePage() {
               rel="noopener noreferrer"
               className="text-[#949ba4] hover:text-white underline underline-offset-2 transition-colors duration-150"
             >
-              Wumpress v1.0
+              Wumpress v1.1
             </a>{' '}
             using{' '}
             <a
