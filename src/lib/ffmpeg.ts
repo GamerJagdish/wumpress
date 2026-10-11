@@ -229,6 +229,11 @@ export async function compressVideo({
       args.push('-r', '30');
     } else if (config.fpsMode === '60') {
       args.push('-r', '60');
+    } else {
+      // Prevent MP4 muxer from forcing CFR at input stream's container timebase (e.g. 90k tbr),
+      // which causes massive duplicate frame generation ("More than 1000 frames duplicated")
+      // and encoder deadlocks on Android screen recordings and VFR videos.
+      args.push('-fps_mode:v', 'vfr');
     }
 
     if (config.audioMode === 'mute') {
@@ -237,6 +242,7 @@ export async function compressVideo({
       args.push('-c:a', 'aac', '-b:a', `${calculation.audioBitrateKbps}k`, '-ac', '2');
     }
 
+    args.push('-max_muxing_queue_size', '1024');
     args.push('-movflags', '+faststart');
     args.push('-y', outputFileName);
 

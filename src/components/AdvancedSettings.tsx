@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { CompressionConfig, MediaType } from '../lib/types';
+import { CompressionConfig, FpsMode, MediaType } from '../lib/types';
 
 interface AdvancedSettingsProps {
   config: CompressionConfig;
@@ -83,7 +83,7 @@ export default function AdvancedSettings({
   return (
     <div className="w-full bg-[#2b2d31] border border-[#383a40] rounded-2xl p-4 sm:p-5 space-y-4">
       <label className="text-xs uppercase tracking-wider text-[#949ba4] font-bold font-['Outfit'] block">
-        {isVideo ? 'Audio & Resolution' : 'Resolution'}
+        {isVideo ? 'Audio, Resolution & Framerate' : 'Resolution'}
       </label>
 
       {/* Audio Profile - ONLY for video */}
@@ -172,6 +172,42 @@ export default function AdvancedSettings({
           })}
         </div>
       </div>
+
+      {/* Frame Rate - ONLY for video */}
+      {isVideo && (
+        <div>
+          <span className="text-xs text-[#949ba4] font-bold block mb-2 font-['Outfit']">
+            Frame Rate
+          </span>
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { mode: 'auto', label: 'Auto (VFR)', desc: 'Preserve timing' },
+              { mode: '60', label: '60 FPS', desc: 'Smooth CFR' },
+              { mode: '30', label: '30 FPS', desc: 'Smaller file' },
+            ].map(({ mode, label, desc }) => {
+              const isSelected = config.fpsMode === mode;
+              return (
+                <motion.button
+                  key={mode}
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => onChange({ fpsMode: mode as FpsMode })}
+                  whileTap={disabled ? {} : { scale: 0.96 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                  className={`flex flex-col items-center justify-center p-2.5 rounded-xl border text-xs font-bold transition-colors select-none font-['Outfit'] ${
+                    isSelected
+                      ? 'border-[#5865f2] bg-[#5865f2] text-white'
+                      : 'border-[#383a40] bg-[#313338] text-[#dbdee1] hover:border-[#4e5058]'
+                  }`}
+                >
+                  <span>{label}</span>
+                  <span className="text-[10px] opacity-75 font-normal mt-0.5">{desc}</span>
+                </motion.button>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
