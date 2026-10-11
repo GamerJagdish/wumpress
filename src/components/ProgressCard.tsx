@@ -43,28 +43,28 @@ export default function ProgressCard({ progress, logs }: ProgressCardProps) {
 
   return (
     <div className="w-full bg-[#2b2d31] border border-[#383a40] rounded-2xl p-6 sm:p-8">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#313338] border border-[#3f4147] flex items-center justify-center text-[#5865f2]">
+      <div className="flex items-start sm:items-center justify-between gap-3 mb-5">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-10 h-10 rounded-xl bg-[#313338] border border-[#3f4147] flex items-center justify-center text-[#5865f2] shrink-0">
             <Icon name="progress_activity" size={20} className="animate-spin" />
           </div>
-          <div>
-            <h3 className="text-xl sm:text-2xl font-bold text-white font-['Outfit']">
+          <div className="min-w-0">
+            <h3 className="text-xl sm:text-2xl font-bold text-white font-['Outfit'] truncate">
               Wumpressing
             </h3>
-            <p className="text-xs text-[#949ba4] mt-0.5">
+            <p className="text-xs text-[#949ba4] mt-0.5 truncate">
               {progress.currentStage || 'Working...'}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 self-end sm:self-auto text-xs">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1e1f22] border border-[#383a40] text-[#949ba4]">
+        <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1.5 sm:gap-3 shrink-0">
+          <div className="text-2xl sm:text-3xl font-black text-[#5865f2] leading-none order-1 sm:order-2">
+            {progress.progress}%
+          </div>
+          <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-[#1e1f22] border border-[#383a40] text-xs text-[#949ba4] order-2 sm:order-1">
             <Icon name="schedule" size={14} className="text-[#5865f2]" />
             <span>{formatDuration(progress.timeElapsed)}</span>
-          </div>
-          <div className="text-2xl sm:text-3xl font-black text-[#5865f2]">
-            {progress.progress}%
           </div>
         </div>
       </div>
