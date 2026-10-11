@@ -9,10 +9,10 @@ import ClickSpark from '../components/ClickSpark';
 export default function NotFound() {
   return (
     <ClickSpark sparkColor="#ffffff">
-      <div className="min-h-screen flex flex-col bg-[#1e1f22] text-[#f2f3f5]">
+      <div className="min-h-screen flex flex-col bg-[#1e1f22] text-[#f2f3f5] select-none">
         <Header />
 
-        <main className="flex-1 w-full max-w-md mx-auto px-4 py-8 flex flex-col justify-center items-center">
+        <main className="flex-1 w-full max-w-md mx-auto px-4 py-8 flex flex-col justify-center items-center select-text">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -50,15 +50,17 @@ export default function NotFound() {
           </motion.div>
         </main>
 
-        <footer className="w-full py-6 text-center text-xs text-[#949ba4]">
-          <a
-            href="https://github.com/gamerjagdish/wumpress"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[#949ba4] hover:text-white underline underline-offset-2 transition-colors duration-150"
-          >
-            Wumpress v1.0
-          </a>
+        <footer className="w-full py-6 text-center text-xs text-[#949ba4] select-none">
+          <span className="inline-block select-text">
+            <a
+              href="https://github.com/gamerjagdish/wumpress"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#949ba4] hover:text-white underline underline-offset-2 transition-colors duration-150"
+            >
+              Wumpress v1.0
+            </a>
+          </span>
         </footer>
       </div>
     </ClickSpark>

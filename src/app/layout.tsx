@@ -2,8 +2,35 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://wumpress.gamerjagdish.com'),
   title: 'Wumpress',
   description: 'Wumpress videos and images under Discord file limits.',
+  icons: {
+    icon: '/logo.webp',
+    apple: '/logo.png',
+  },
+  openGraph: {
+    title: 'Wumpress',
+    description: 'Wumpress videos and images under Discord file limits.',
+    url: 'https://wumpress.gamerjagdish.com',
+    siteName: 'Wumpress',
+    images: [
+      {
+        url: '/logo.png',
+        width: 1254,
+        height: 1254,
+        alt: 'Wumpress Logo',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Wumpress',
+    description: 'Wumpress videos and images under Discord file limits.',
+    images: ['/logo.png'],
+  },
 };
 
 export default function RootLayout({
