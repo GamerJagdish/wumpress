@@ -79,29 +79,23 @@ export default function ProgressCard({ progress, logs }: ProgressCardProps) {
 
       {/* Simplified live frame / fps stats for users who don't expand the log */}
       {stats && (stats.frame || stats.time) && (
-        <div className="p-3 rounded-xl bg-[#1e1f22] border border-[#383a40] flex flex-wrap items-center justify-between gap-2 text-xs text-[#dbdee1] mb-4">
+        <div className="p-3 rounded-xl bg-[#1e1f22] border border-[#383a40] grid grid-cols-2 sm:flex sm:items-center sm:justify-between gap-y-2.5 gap-x-4 sm:gap-2 text-xs text-[#dbdee1] mb-4">
           <div className="flex items-center gap-2">
             <span className="text-[#949ba4]">Frame:</span>
             <span className="font-bold text-white">{stats.frame ?? 'n/a'}</span>
           </div>
-          {stats.fps && (
-            <div className="flex items-center gap-2">
-              <span className="text-[#949ba4]">Speed:</span>
-              <span className="font-bold text-white">{stats.fps} fps</span>
-            </div>
-          )}
-          {stats.speed && (
-            <div className="flex items-center gap-2">
-              <span className="text-[#949ba4]">Rate:</span>
-              <span className="font-bold text-[#5865f2]">{stats.speed}</span>
-            </div>
-          )}
-          {stats.time && (
-            <div className="flex items-center gap-2">
-              <span className="text-[#949ba4]">Encoded:</span>
-              <span className="font-bold text-white">{stats.time}</span>
-            </div>
-          )}
+          <div className="flex items-center gap-2">
+            <span className="text-[#949ba4]">Speed:</span>
+            <span className="font-bold text-white">{stats.fps ? `${stats.fps} fps` : 'n/a'}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-[#949ba4]">Rate:</span>
+            <span className="font-bold text-[#5865f2]">{stats.speed ?? 'n/a'}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-[#949ba4]">Encoded:</span>
+            <span className="font-bold text-white">{stats.time ?? '00:00:00'}</span>
+          </div>
         </div>
       )}
 

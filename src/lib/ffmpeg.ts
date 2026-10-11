@@ -162,14 +162,7 @@ export async function compressVideo({
     const parsed = parseEncodingStats(message);
     if (parsed) {
       currentStats = parsed;
-      let stageDesc = 'Encoding video';
-      if (parsed.frame && parsed.fps) {
-        stageDesc = `Frame ${parsed.frame} • ${parsed.fps} fps`;
-        if (parsed.speed) stageDesc += ` • ${parsed.speed}`;
-      } else if (parsed.time) {
-        stageDesc = `${parsed.time} encoded`;
-      }
-      onProgress(-1, stageDesc, parsed);
+      onProgress(-1, undefined, parsed);
     }
   };
 
