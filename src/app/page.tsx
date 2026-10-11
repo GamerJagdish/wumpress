@@ -142,6 +142,7 @@ export default function HomePage() {
           },
         });
         outputBlob = res.blob;
+        finalFileName = res.fileName;
       } else if (metadata.type === 'gif') {
         const res = await compressGif({
           file: metadata.file,
