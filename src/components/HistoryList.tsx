@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { History, Trash2, Film, Image as ImageIcon, Clock, Eye, Download, X } from 'lucide-react';
+import { Trash2, Film, Image as ImageIcon, Clock, Eye, Download, X } from 'lucide-react';
 import { HistoryItem } from '../lib/types';
 import { formatBytes, formatDuration } from '../lib/calculator';
 
@@ -62,9 +62,6 @@ export default function HistoryList({ items, onDelete, onClearAll }: HistoryList
       {/* Header */}
       <div className="flex items-center justify-between px-1">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-lg bg-[#313338] border border-[#3f4147] flex items-center justify-center text-[#5865f2]">
-            <History className="w-3.5 h-3.5" />
-          </div>
           <h3 className="text-sm font-bold text-white font-['Outfit']">
             Recent Compressions
           </h3>

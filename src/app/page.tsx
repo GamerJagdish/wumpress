@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useSyncExternalStore, useCallback } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, Reorder, useDragControls } from 'motion/react';
 import {
   AlertCircle,
   Film,
@@ -11,6 +11,7 @@ import {
   Layers,
   Pencil,
   Check,
+  GripVertical,
 } from 'lucide-react';
 
 import Header from '@/components/Header';
@@ -58,6 +59,141 @@ const DEFAULT_CONFIG: CompressionConfig = {
 };
 
 type ViewMode = 'upload' | 'progress' | 'result';
+
+interface QueueItemRowProps {
+  item: QueuedCompression;
+  index: number;
+  isEditing: boolean;
+  onToggleEdit: () => void;
+  onRemove: () => void;
+  onUpdateConfig: (updated: Partial<CompressionConfig>) => void;
+  onCloseEdit: () => void;
+}
+
+function QueueItemRow({
+  item,
+  index,
+  isEditing,
+  onToggleEdit,
+  onRemove,
+  onUpdateConfig,
+  onCloseEdit,
+}: QueueItemRowProps) {
+  const dragControls = useDragControls();
+
+  return (
+    <Reorder.Item
+      as="div"
+      value={item}
+      id={item.id}
+      dragListener={false}
+      dragControls={dragControls}
+      className="bg-[#1e1f22] border border-[#383a40] rounded-xl overflow-hidden transition-colors"
+      whileDrag={{
+        scale: 1.02,
+        boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.6)',
+        borderColor: '#5865f2',
+        zIndex: 50,
+      }}
+    >
+      <div className="p-3 flex items-center justify-between gap-3 text-xs">
+        <div className="flex items-center gap-2 sm:gap-2.5 overflow-hidden min-w-0">
+          <div
+            onPointerDown={(e) => dragControls.start(e)}
+            className="flex items-center gap-1.5 cursor-grab active:cursor-grabbing touch-none select-none p-1.5 -ml-1 text-[#80848e] hover:text-white active:text-[#5865f2] transition-colors shrink-0 rounded-lg"
+            title="Drag to rearrange"
+          >
+            <GripVertical className="w-4 h-4 text-[#80848e]" />
+            <span className="text-[#5865f2] font-bold font-mono text-xs">
+              #{index + 1}
+            </span>
+          </div>
+
+          <div className="w-7 h-7 rounded-lg bg-[#313338] border border-[#3f4147] flex items-center justify-center shrink-0 text-[#5865f2]">
+            {item.metadata.type === 'video' ? (
+              <Film className="w-3.5 h-3.5" />
+            ) : (
+              <ImageIcon className="w-3.5 h-3.5" />
+            )}
+          </div>
+          <div className="overflow-hidden min-w-0">
+            <span className="text-white font-bold truncate block font-['Outfit']">
+              {item.metadata.name}
+            </span>
+            <div className="flex items-center gap-2 text-[11px] text-[#949ba4]">
+              <span>{formatBytes(item.metadata.originalSizeBytes)}</span>
+              <span className="text-[#5865f2] font-semibold">
+                Target: {item.config.targetSizeMB} MB
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-1.5 shrink-0">
+          <button
+            type="button"
+            onClick={onToggleEdit}
+            className={`p-1.5 rounded-lg border text-xs transition-colors cursor-pointer flex items-center gap-1 ${
+              isEditing
+                ? 'bg-[#5865f2] border-[#5865f2] text-white'
+                : 'bg-[#313338] border-[#3f4147] text-[#949ba4] hover:text-white hover:bg-[#383a40]'
+            }`}
+            title={isEditing ? 'Close settings' : 'Edit compression settings'}
+          >
+            <Pencil className="w-3.5 h-3.5" />
+            <span className="text-[11px] font-medium hidden sm:inline">
+              {isEditing ? 'Close' : 'Edit'}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={onRemove}
+            className="p-1.5 rounded-lg bg-[#313338] hover:bg-[#392125] border border-[#3f4147] hover:border-[#5c2d33] text-[#949ba4] hover:text-[#f23f43] transition-colors cursor-pointer"
+            title="Remove from queue"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Inline Editor for Queued Item */}
+      {isEditing && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.15 }}
+          className="p-3.5 pt-0 border-t border-[#383a40] space-y-3 bg-[#242629]/50"
+        >
+          <div className="pt-2">
+            <TargetSelector
+              targetMB={item.config.targetSizeMB}
+              onTargetChange={(mb) => onUpdateConfig({ targetSizeMB: mb })}
+            />
+          </div>
+
+          <AdvancedSettings
+            config={item.config}
+            onChange={(up) => onUpdateConfig(up)}
+            mediaType={item.metadata.type}
+          />
+
+          <div className="flex justify-end pt-1">
+            <button
+              type="button"
+              onClick={onCloseEdit}
+              className="px-3 py-1.5 rounded-xl bg-[#5865f2] hover:bg-[#4752c4] text-white text-xs font-bold transition-colors cursor-pointer flex items-center gap-1 font-['Outfit']"
+            >
+              <Check className="w-3.5 h-3.5" />
+              <span>Done Editing</span>
+            </button>
+          </div>
+        </motion.div>
+      )}
+    </Reorder.Item>
+  );
+}
 
 export default function HomePage() {
   const [selectedFiles, setSelectedFiles] = useState<MediaMetadata[]>([]);
@@ -462,6 +598,11 @@ export default function HomePage() {
     );
   };
 
+  const handleReorderQueue = (newQueue: QueuedCompression[]) => {
+    queueRef.current = newQueue;
+    setQueue(newQueue);
+  };
+
   const handleCancelActiveJob = useCallback(() => {
     if (isCancellingRef.current) return;
 
@@ -758,7 +899,7 @@ export default function HomePage() {
                   />
                 )}
 
-                {/* Queued Items List with Inline Editing */}
+                {/* Queued Items List with Drag to Rearrange */}
                 {queue.length > 0 && (
                   <div className="bg-[#2b2d31] border border-[#383a40] rounded-2xl p-4 sm:p-5 space-y-3">
                     <div className="flex items-center justify-between">
@@ -766,111 +907,32 @@ export default function HomePage() {
                         Up Next in Queue ({queue.length})
                       </span>
                       <span className="text-[11px] text-[#80848e]">
-                        Sequential processing
+                        {queue.length > 1 ? 'Drag handle to rearrange' : 'Sequential processing'}
                       </span>
                     </div>
 
-                    <div className="space-y-2.5">
-                      {queue.map((item, idx) => {
-                        const isEditing = editingQueueId === item.id;
-                        return (
-                          <div
-                            key={item.id}
-                            className="bg-[#1e1f22] border border-[#383a40] rounded-xl overflow-hidden transition-all duration-200"
-                          >
-                            <div className="p-3 flex items-center justify-between gap-3 text-xs">
-                              <div className="flex items-center gap-2.5 overflow-hidden min-w-0">
-                                <span className="text-[#5865f2] font-bold font-mono shrink-0">
-                                  #{idx + 1}
-                                </span>
-                                <div className="w-7 h-7 rounded-lg bg-[#313338] border border-[#3f4147] flex items-center justify-center shrink-0 text-[#5865f2]">
-                                  {item.metadata.type === 'video' ? (
-                                    <Film className="w-3.5 h-3.5" />
-                                  ) : (
-                                    <ImageIcon className="w-3.5 h-3.5" />
-                                  )}
-                                </div>
-                                <div className="overflow-hidden min-w-0">
-                                  <span className="text-white font-bold truncate block font-['Outfit']">
-                                    {item.metadata.name}
-                                  </span>
-                                  <div className="flex items-center gap-2 text-[11px] text-[#949ba4]">
-                                    <span>{formatBytes(item.metadata.originalSizeBytes)}</span>
-                                    <span className="text-[#5865f2] font-semibold">
-                                      Target: {item.config.targetSizeMB} MB
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-
-                              <div className="flex items-center gap-1.5 shrink-0">
-                                <button
-                                  type="button"
-                                  onClick={() => setEditingQueueId(isEditing ? null : item.id)}
-                                  className={`p-1.5 rounded-lg border text-xs transition-colors cursor-pointer flex items-center gap-1 ${
-                                    isEditing
-                                      ? 'bg-[#5865f2] border-[#5865f2] text-white'
-                                      : 'bg-[#313338] border-[#3f4147] text-[#949ba4] hover:text-white hover:bg-[#383a40]'
-                                  }`}
-                                  title={isEditing ? 'Close settings' : 'Edit compression settings'}
-                                >
-                                  <Pencil className="w-3.5 h-3.5" />
-                                  <span className="text-[11px] font-medium hidden sm:inline">
-                                    {isEditing ? 'Close' : 'Edit'}
-                                  </span>
-                                </button>
-
-                                <button
-                                  type="button"
-                                  onClick={() => handleRemoveFromQueue(item.id)}
-                                  className="p-1.5 rounded-lg bg-[#313338] hover:bg-[#392125] border border-[#3f4147] hover:border-[#5c2d33] text-[#949ba4] hover:text-[#f23f43] transition-colors cursor-pointer"
-                                  title="Remove from queue"
-                                >
-                                  <X className="w-3.5 h-3.5" />
-                                </button>
-                              </div>
-                            </div>
-
-                            {/* Inline Editor for Queued Item */}
-                            {isEditing && (
-                              <motion.div
-                                initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: 'auto' }}
-                                exit={{ opacity: 0, height: 0 }}
-                                transition={{ duration: 0.15 }}
-                                className="p-3.5 pt-0 border-t border-[#383a40] space-y-3 bg-[#242629]/50"
-                              >
-                                <div className="pt-2">
-                                  <TargetSelector
-                                    targetMB={item.config.targetSizeMB}
-                                    onTargetChange={(mb) =>
-                                      handleUpdateQueueConfig(item.id, { targetSizeMB: mb })
-                                    }
-                                  />
-                                </div>
-
-                                <AdvancedSettings
-                                  config={item.config}
-                                  onChange={(up) => handleUpdateQueueConfig(item.id, up)}
-                                  mediaType={item.metadata.type}
-                                />
-
-                                <div className="flex justify-end pt-1">
-                                  <button
-                                    type="button"
-                                    onClick={() => setEditingQueueId(null)}
-                                    className="px-3 py-1.5 rounded-xl bg-[#5865f2] hover:bg-[#4752c4] text-white text-xs font-bold transition-colors cursor-pointer flex items-center gap-1 font-['Outfit']"
-                                  >
-                                    <Check className="w-3.5 h-3.5" />
-                                    <span>Done Editing</span>
-                                  </button>
-                                </div>
-                              </motion.div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
+                    <Reorder.Group
+                      as="div"
+                      axis="y"
+                      values={queue}
+                      onReorder={handleReorderQueue}
+                      className="space-y-2.5"
+                    >
+                      {queue.map((item, idx) => (
+                        <QueueItemRow
+                          key={item.id}
+                          item={item}
+                          index={idx}
+                          isEditing={editingQueueId === item.id}
+                          onToggleEdit={() =>
+                            setEditingQueueId(editingQueueId === item.id ? null : item.id)
+                          }
+                          onRemove={() => handleRemoveFromQueue(item.id)}
+                          onUpdateConfig={(up) => handleUpdateQueueConfig(item.id, up)}
+                          onCloseEdit={() => setEditingQueueId(null)}
+                        />
+                      ))}
+                    </Reorder.Group>
                   </div>
                 )}
 
