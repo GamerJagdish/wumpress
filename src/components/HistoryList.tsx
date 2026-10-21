@@ -25,20 +25,31 @@ function formatRelativeTime(timestamp: number): string {
 }
 
 export default function HistoryList({ items, onDelete, onClearAll }: HistoryListProps) {
-  const [previewItem, setPreviewItem] = useState<HistoryItem | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [preview, setPreview] = useState<{ item: HistoryItem; url: string } | null>(null);
   const [confirmClear, setConfirmClear] = useState(false);
 
-  useEffect(() => {
-    if (previewItem) {
-      const url = URL.createObjectURL(previewItem.blob);
-      setPreviewUrl(url);
-      return () => {
-        URL.revokeObjectURL(url);
-        setPreviewUrl(null);
-      };
+  const handleOpenPreview = (item: HistoryItem) => {
+    if (preview?.url) {
+      URL.revokeObjectURL(preview.url);
     }
-  }, [previewItem]);
+    const url = URL.createObjectURL(item.blob);
+    setPreview({ item, url });
+  };
+
+  const handleClosePreview = () => {
+    if (preview?.url) {
+      URL.revokeObjectURL(preview.url);
+    }
+    setPreview(null);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (preview?.url) {
+        URL.revokeObjectURL(preview.url);
+      }
+    };
+  }, [preview?.url]);
 
   if (items.length === 0) {
     return null;
@@ -152,7 +163,7 @@ export default function HistoryList({ items, onDelete, onClearAll }: HistoryList
               <div className="flex items-center gap-1.5 shrink-0">
                 <button
                   type="button"
-                  onClick={() => setPreviewItem(item)}
+                  onClick={() => handleOpenPreview(item)}
                   title="Preview"
                   className="w-8 h-8 rounded-lg bg-[#313338] hover:bg-[#383a40] text-[#949ba4] hover:text-white flex items-center justify-center transition-colors cursor-pointer border border-[#3f4147]"
                 >
@@ -184,7 +195,7 @@ export default function HistoryList({ items, onDelete, onClearAll }: HistoryList
 
       {/* Preview Modal */}
       <AnimatePresence>
-        {previewItem && previewUrl && (
+        {preview && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs select-none">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -196,18 +207,18 @@ export default function HistoryList({ items, onDelete, onClearAll }: HistoryList
               <div className="flex items-center justify-between gap-3">
                 <div className="overflow-hidden">
                   <h3 className="text-base sm:text-lg font-bold text-white truncate font-['Outfit']">
-                    {previewItem.fileName}
+                    {preview.item.fileName}
                   </h3>
                   <div className="flex items-center gap-2 text-xs text-[#949ba4]">
-                    <span className="line-through">{formatBytes(previewItem.originalSizeBytes)}</span>
-                    <span className="text-[#5865f2] font-bold">{formatBytes(previewItem.outputSizeBytes)}</span>
-                    <span className="text-[#23a55a] font-medium">(-{previewItem.savingsPercentage}%)</span>
+                    <span className="line-through">{formatBytes(preview.item.originalSizeBytes)}</span>
+                    <span className="text-[#5865f2] font-bold">{formatBytes(preview.item.outputSizeBytes)}</span>
+                    <span className="text-[#23a55a] font-medium">(-{preview.item.savingsPercentage}%)</span>
                   </div>
                 </div>
 
                 <button
                   type="button"
-                  onClick={() => setPreviewItem(null)}
+                  onClick={handleClosePreview}
                   className="w-8 h-8 rounded-lg bg-[#313338] hover:bg-[#383a40] text-[#949ba4] hover:text-white flex items-center justify-center transition-colors cursor-pointer border border-[#3f4147] shrink-0"
                 >
                   <X className="w-4.5 h-4.5" />
@@ -216,9 +227,9 @@ export default function HistoryList({ items, onDelete, onClearAll }: HistoryList
 
               {/* Media viewer */}
               <div className="w-full bg-[#1e1f22] border border-[#383a40] rounded-xl overflow-hidden max-h-[360px] flex items-center justify-center">
-                {previewItem.mediaType === 'video' ? (
+                {preview.item.mediaType === 'video' ? (
                   <video
-                    src={previewUrl}
+                    src={preview.url}
                     controls
                     autoPlay
                     playsInline
@@ -227,8 +238,8 @@ export default function HistoryList({ items, onDelete, onClearAll }: HistoryList
                 ) : (
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img
-                    src={previewUrl}
-                    alt={previewItem.fileName}
+                    src={preview.url}
+                    alt={preview.item.fileName}
                     className="w-full max-h-[360px] object-contain"
                   />
                 )}
@@ -238,7 +249,7 @@ export default function HistoryList({ items, onDelete, onClearAll }: HistoryList
               <div className="flex items-center justify-end gap-2 pt-1">
                 <button
                   type="button"
-                  onClick={() => setPreviewItem(null)}
+                  onClick={handleClosePreview}
                   className="px-4 py-2 rounded-xl bg-[#313338] hover:bg-[#383a40] text-[#dbdee1] text-xs font-bold transition-colors cursor-pointer font-['Outfit']"
                 >
                   Close
@@ -246,7 +257,7 @@ export default function HistoryList({ items, onDelete, onClearAll }: HistoryList
 
                 <button
                   type="button"
-                  onClick={() => handleDownload(previewItem)}
+                  onClick={() => handleDownload(preview.item)}
                   className="px-4 py-2 rounded-xl bg-[#5865f2] hover:bg-[#4752c4] text-white text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 font-['Outfit']"
                 >
                   <Download className="w-4 h-4" />

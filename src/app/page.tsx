@@ -226,8 +226,13 @@ export default function HomePage() {
   const cancelTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const executeCompressionRef = useRef<((targetMeta: MediaMetadata, targetConfig: CompressionConfig) => Promise<void>) | null>(null);
 
-  queueRef.current = queue;
-  viewModeRef.current = viewMode;
+  useEffect(() => {
+    queueRef.current = queue;
+  }, [queue]);
+
+  useEffect(() => {
+    viewModeRef.current = viewMode;
+  }, [viewMode]);
 
   const isCompressing = progress.status === 'compressing';
 
@@ -261,6 +266,34 @@ export default function HomePage() {
     };
   }, [isCompressing]);
 
+  const handleClearSelectedFiles = useCallback(() => {
+    selectedFiles.forEach((f) => {
+      if (f.previewUrl) URL.revokeObjectURL(f.previewUrl);
+    });
+    setSelectedFiles([]);
+  }, [selectedFiles]);
+
+  const handleReset = useCallback(() => {
+    if (cancelTimeoutRef.current) {
+      clearTimeout(cancelTimeoutRef.current);
+      cancelTimeoutRef.current = null;
+    }
+    if (result?.downloadUrl) {
+      URL.revokeObjectURL(result.downloadUrl);
+    }
+    handleClearSelectedFiles();
+    setResult(null);
+    setLogs([]);
+    setProgress({
+      status: 'idle',
+      progress: 0,
+      currentStage: '',
+      timeElapsed: 0,
+      error: null,
+    });
+    setViewMode('upload');
+  }, [result, handleClearSelectedFiles]);
+
   // Handle browser Back button with History API
   useEffect(() => {
     const handlePopState = () => {
@@ -278,7 +311,7 @@ export default function HomePage() {
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
-  }, [result, selectedFiles, isCompressing]);
+  }, [result, selectedFiles, isCompressing, handleReset, handleClearSelectedFiles]);
 
   const handleFilesSelect = async (files: File[]) => {
     if (files.length === 0) return;
@@ -305,13 +338,6 @@ export default function HomePage() {
       URL.revokeObjectURL(fileToRemove.previewUrl);
     }
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const handleClearSelectedFiles = () => {
-    selectedFiles.forEach((f) => {
-      if (f.previewUrl) URL.revokeObjectURL(f.previewUrl);
-    });
-    setSelectedFiles([]);
   };
 
   const handleConfigChange = (updated: Partial<CompressionConfig>) => {
@@ -545,7 +571,9 @@ export default function HomePage() {
     [handlePostCancellation]
   );
 
-  executeCompressionRef.current = executeCompression;
+  useEffect(() => {
+    executeCompressionRef.current = executeCompression;
+  }, [executeCompression]);
 
   const startCompression = () => {
     if (selectedFiles.length === 0) return;
@@ -649,27 +677,6 @@ export default function HomePage() {
 
     terminateFFmpeg();
   }, []);
-
-  const handleReset = () => {
-    if (cancelTimeoutRef.current) {
-      clearTimeout(cancelTimeoutRef.current);
-      cancelTimeoutRef.current = null;
-    }
-    if (result?.downloadUrl) {
-      URL.revokeObjectURL(result.downloadUrl);
-    }
-    handleClearSelectedFiles();
-    setResult(null);
-    setLogs([]);
-    setProgress({
-      status: 'idle',
-      progress: 0,
-      currentStage: '',
-      timeElapsed: 0,
-      error: null,
-    });
-    setViewMode('upload');
-  };
 
   const handleDeleteHistory = async (id: string) => {
     await deleteHistory(id);
